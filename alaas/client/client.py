@@ -5,9 +5,5 @@ class Client:
     def push(self, data_list, asynchronous=False):
         pass
 
-    def query(self):
+    def query(self, budget):
         pass
-
-
-if __name__ == "__main__":
-    pass

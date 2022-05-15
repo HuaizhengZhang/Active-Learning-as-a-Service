@@ -1,6 +1,12 @@
-## ALaaS
+# ALaaS: Active learning as a service.
 
-Active learning as a service.
+## Installation
+
+Using Pypi,
+
+```bash
+pip install alaas
+```
 
 ## Quick Start
 
@@ -25,20 +31,35 @@ active_learning:
     gpus: 'all'
 ```
 
-The `infer_model` is designed for inference service inside some active learning strategies.
+The `infer_model` is designed for inference service inside some active learning strategies, by setting the `al_server`,
+we can help you automatically deploy the inference model from the model repository.
 
-### Start the 3-party inference service
+### Start the active learning server
 
-if you want to use the 3-party inference services (e.g., TensorFlow-Serving, Triton Inference Server) to power up the
-active learning, you can start the service by yourself and set up the configuration. We provide a script for you to
-start the NVIDIA Triton Inference Server of resnet example.
+You need to start an active learning service before conducting the data selection.
 
-```bash
-cd zeef/service/scripts/
-sh start_triton.sh
+```python
+from alaas import Server
+
+al_server = Server(config_path='./you_config.yml')
+al_server
+
 ```
 
-### Start the active learning
+
+### Define the active learning client and perform querying
+
+You can easily start the data selection by the following code, 
+
+```python 
+from alaas import Client 
+
+al_client = Client(server_url="127.0.0.1:8888")
+al_client.push(data_list, asynchronous=True)
+al_client.query(budget=100)
+```
+
+### Start the active learning from example
 
 ```bash
 cd zalaas/examples
