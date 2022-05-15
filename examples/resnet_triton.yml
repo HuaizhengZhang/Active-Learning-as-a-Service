@@ -1,0 +1,14 @@
+name: "IMG_CLASSIFICATION"
+version: 0.1
+active_learning:
+  budget: 10
+  strategy:
+    algorithm: "LeastConfidence"
+    infer_model:
+      model_hub: "huggingface"
+      name: "resnet"
+      batch_size: 4
+      input_dtype: "float32"
+  al_server:
+    address: "54.251.31.100:8900"
+    gpus: 'all'
