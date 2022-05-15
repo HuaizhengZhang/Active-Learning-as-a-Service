@@ -2,7 +2,7 @@
 
 ## Installation
 
-Using Pypi,
+You can easily install the AlaaS by `pip`,
 
 ```bash
 pip install alaas
@@ -42,14 +42,12 @@ You need to start an active learning service before conducting the data selectio
 from alaas import Server
 
 al_server = Server(config_path='./you_config.yml')
-al_server
-
+al_server.start()
 ```
-
 
 ### Define the active learning client and perform querying
 
-You can easily start the data selection by the following code, 
+You can easily start the data selection by the following code,
 
 ```python 
 from alaas import Client 
@@ -59,12 +57,7 @@ al_client.push(data_list, asynchronous=True)
 al_client.query(budget=100)
 ```
 
-### Start the active learning from example
-
-```bash
-cd zalaas/examples
-python resnet50.py
-```
+### Example output
 
 the example output will be something like:
 
@@ -72,9 +65,7 @@ the example output will be something like:
 preparing data...
 Files already downloaded and verified
 start active learning, query number: 1000...
-[ 295 7289 6148 9521 6351 8452 2825   97 5786 9244 3503 6778 5415 7982
- 9757 2867  267 3224  236   43 3024 7506 8739 2335 2962 1556 2015 9260
- 3444 1391 4772 3085 5501 3393 ...  5473 4524 8193]
+[uri_1, uri_2, uri_3, ...., uri_n]
 ```
 
-which are the index of input data selected by active learning.
+which are the uri of input data selected by active learning.
