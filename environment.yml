@@ -1,0 +1,40 @@
+name: base
+channels:
+  - defaults
+dependencies:
+  - brotlipy=0.7.0=py39h9ed2024_1003
+  - ca-certificates=2021.7.5=hecd8cb5_1
+  - certifi=2021.5.30=py39hecd8cb5_0
+  - cffi=1.14.6=py39h2125817_0
+  - chardet=4.0.0=py39hecd8cb5_1003
+  - conda=4.10.3=py39hecd8cb5_0
+  - conda-package-handling=1.7.3=py39h9ed2024_1
+  - cryptography=3.4.7=py39h2fd3fbb_0
+  - idna=2.10=pyhd3eb1b0_0
+  - libcxx=10.0.0=1
+  - libffi=3.3=hb1e8313_2
+  - ncurses=6.2=h0a44026_1
+  - openssl=1.1.1k=h9ed2024_0
+  - pip=21.1.3=py39hecd8cb5_0
+  - pycosat=0.6.3=py39h9ed2024_0
+  - pycparser=2.20=py_2
+  - pyopenssl=20.0.1=pyhd3eb1b0_1
+  - pysocks=1.7.1=py39hecd8cb5_0
+  - python=3.9.5=h88f2d9e_3
+  - python.app=3=py39h9ed2024_0
+  - readline=8.1=h9ed2024_0
+  - requests=2.25.1=pyhd3eb1b0_0
+  - ruamel_yaml=0.15.100=py39h9ed2024_0
+  - setuptools=52.0.0=py39hecd8cb5_0
+  - six=1.16.0=pyhd3eb1b0_0
+  - sqlite=3.36.0=hce871da_0
+  - tk=8.6.10=hb0a8c7a_0
+  - tqdm=4.61.2=pyhd3eb1b0_1
+  - tzdata=2021a=h52ac0ba_0
+  - urllib3=1.26.6=pyhd3eb1b0_1
+  - wheel=0.36.2=pyhd3eb1b0_0
+  - xz=5.2.5=h1de35cc_0
+  - yaml=0.2.5=haf1e3a3_0
+  - zlib=1.2.11=h1de35cc_3
+  - pip:
+    - wakatime==13.1.0
