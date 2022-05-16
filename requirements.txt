@@ -10,5 +10,5 @@ requests~=2.26.0
 torch~=1.10.0
 pillow~=8.4.0
 torchvision~=0.11.1
-uvicorn~=0.17.6
 fastapi~=0.78.0
+uvicorn
