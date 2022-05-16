@@ -20,7 +20,7 @@ router = InferringRouter()
 
 
 @cbv(router)
-class ALServerModel:
+class ALServerMod:
 
     def __init__(self):
         self.asynchronous = False
