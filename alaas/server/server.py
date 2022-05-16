@@ -45,7 +45,7 @@ class ALServerModel:
     def push(self, data: List[str], asynchronous: bool):
         self.data_urls = data
         self.asynchronous = asynchronous
-        self.download_data()
+        self.download_data()  # time-consuming operation
         return {'data': data, 'asynchronous': asynchronous}
 
 
