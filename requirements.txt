@@ -5,7 +5,6 @@ tqdm==4.62.3
 tritonclient~=2.21.0
 pyyaml~=6.0
 docker~=5.0.3
-pymongo~=4.1.1
 requests~=2.26.0
 torch~=1.10.0
 pillow~=8.4.0

@@ -23,8 +23,7 @@ class Client:
 
 
 if __name__ == '__main__':
-    local_file_list = "/Users/huangyz0918/Desktop/CIFAR-10-images/train.txt"
-    remote_file_list = "/Users/huangyz0918/Desktop/CIFAR-10-images/train_remote.txt"
+    remote_file_list = "../../examples/test_images.txt"
     with open(remote_file_list) as file:
         url_list = [line.rstrip() for line in file.readlines()]
         print(url_list[:5])

@@ -1,0 +1,11 @@
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0000.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0001.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0002.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0003.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0004.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0005.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0006.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0007.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0008.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0009.jpg
+https://github.com/YoongiKim/CIFAR-10-images/raw/master/train/airplane/0010.jpg

@@ -1,11 +1,10 @@
-import uvicorn
-from typing import List
-
 import os
+from typing import List
 from pathlib import Path
+
+import uvicorn
 import urllib.request
 from urllib.parse import urlparse
-
 from fastapi import FastAPI
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
@@ -25,17 +24,27 @@ class ALServerMod:
     def __init__(self):
         self.asynchronous = False
         self.data_urls = []
+        home_path = str(Path.home())
+        self.alaas_home = home_path + "/.alaas/"
+        self.db_manager = DBManager(self.alaas_home + 'index.db')
 
     def download_data(self):
-        home_path = str(Path.home())
-        alaas_home = home_path + "/.alaas/"
-        Path(alaas_home).mkdir(parents=True, exist_ok=True)
+        path_list = []
+        Path(self.alaas_home).mkdir(parents=True, exist_ok=True)
         for url in self.data_urls:
-            urllib.request.urlretrieve(url, alaas_home + os.path.basename(urlparse(url).path))
+            data_save_path = self.alaas_home + os.path.basename(urlparse(url).path)
+            urllib.request.urlretrieve(url, data_save_path)
+            path_list.append(data_save_path)
+            self.db_manager.insert_record(data_save_path)
+        return path_list
 
     @router.get("/")
     def index(self):
         return {"message": "Welcome to ALaaS Server!"}
+
+    @router.get("/data")
+    def get_pool(self):
+        return {"data": self.db_manager.read_records()}
 
     @router.get("/query")
     def query(self, budget: int):
@@ -56,11 +65,6 @@ class Server:
 
     def __init__(self, config_path):
         self.cfg_manager = ConfigManager(config_path)
-        self.db_manager = None
-
-    def start_db(self, db_name, container_name, ports):
-        # TODO: check the port and db name is valid or not, offer some options to start.
-        self.cfg_manager = DBManager(db_name, container_name, ports)
 
     @staticmethod
     def start(host="0.0.0.0", port=8000, restful=True):
@@ -68,7 +72,7 @@ class Server:
             app_server.include_router(router)
             uvicorn.run(app_server, host=host, port=port)
         else:
-            # RPC Server
+            # TODO: RPC Server
             raise NotImplementedError("gRPC server is not available right now.")
 
 
