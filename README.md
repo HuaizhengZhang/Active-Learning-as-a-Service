@@ -2,7 +2,7 @@
 
 ## Installation
 
-You can easily install the AlaaS by `pip`,
+You can easily install the ALaaS by `pip`,
 
 ```bash
 pip install alaas
