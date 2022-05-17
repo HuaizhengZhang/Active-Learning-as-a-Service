@@ -1,3 +1,4 @@
+import uuid
 import hashlib
 import sqlite3
 
@@ -15,7 +16,7 @@ class DBManager:
         try:
             self.conn = sqlite3.connect(db_file)
             self.cursor = self.conn.cursor()
-            self.cursor.execute("CREATE TABLE AL_POOL (ID TEXT, DATA TEXT);")
+            self.cursor.execute("CREATE TABLE AL_POOL (MD5 TEXT, UUID TEXT, DATA TEXT);")
         except Exception as e:
             print(e)
 
@@ -26,20 +27,21 @@ class DBManager:
         self.conn = sqlite3.connect(db_file)
 
     def insert_record(self, data_pth, skip=True):
+        random_uuid = str(uuid.uuid4())
         file_id = hashlib.md5(data_pth.encode('utf-8')).hexdigest()
         if skip:
             if not self.check_row(file_id):
-                self.cursor.execute("INSERT INTO AL_POOL VALUES (?, ?);", (file_id, data_pth))
+                self.cursor.execute("INSERT INTO AL_POOL VALUES (?, ?, ?);", (file_id, random_uuid, data_pth))
         else:
-            self.cursor.execute("INSERT INTO AL_POOL VALUES (?, ?);", (file_id, data_pth))
+            self.cursor.execute("INSERT INTO AL_POOL VALUES (?, ?, ?);", (file_id, random_uuid, data_pth))
 
         self.conn.commit()
 
     def read_records(self):
-        return self.cursor.execute("SELECT ID, DATA FROM AL_POOL").fetchall()
+        return self.cursor.execute("SELECT MD5, UUID, DATA FROM AL_POOL").fetchall()
 
     def check_row(self, md5):
-        result = self.cursor.execute("SELECT EXISTS(SELECT 1 FROM AL_POOL WHERE ID = ?);", (md5,)).fetchall()
+        result = self.cursor.execute("SELECT EXISTS(SELECT 1 FROM AL_POOL WHERE MD5 = ?);", (md5,)).fetchall()
         return result[0][0] is not 0
 
 
