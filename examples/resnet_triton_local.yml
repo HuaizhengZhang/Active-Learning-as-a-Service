@@ -1,0 +1,23 @@
+name: "IMG_CLASSIFICATION"
+version: 0.1
+active_learning:
+  budget: 10
+  strategy:
+    algorithm: "LeastConfidence"
+    infer_model:
+      name: "resnet"
+      type: torch_hub
+      hub_name: "pytorch/vision:v0.9.0"
+      model: "resnet18"
+      input:
+        - data_type: TYPE_FP32
+          dims: [ 4, 3, 224, 224 ]
+      instance_group:
+        - count: 1
+          kind: KIND_GPU
+  al_server:
+    address: "54.251.31.100:8900"
+    worker:
+      type: docker
+      docker_repo: "nvcr.io/nvidia/tritonserver"
+      tag: "22.03-pyt-python-py3"
