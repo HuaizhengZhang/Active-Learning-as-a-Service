@@ -1,13 +1,14 @@
+fastapi~=0.78.0
 numpy>=1.13
 scikit_learn>=0.20.0
 setuptools==58.0.4
 tqdm==4.62.3
 tritonclient~=2.21.0
+pydantic==1.9.1
 pyyaml~=6.0
 docker~=5.0.3
 requests~=2.26.0
 torch~=1.10.0
 pillow~=8.4.0
 torchvision~=0.11.1
-fastapi~=0.78.0
-uvicorn
+uvicorn==0.17.0
