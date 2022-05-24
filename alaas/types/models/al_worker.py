@@ -5,33 +5,23 @@ Author: Li Yuanming
 Email: yuanmingleee@gmail.com
 Date: May 23, 2022
 """
-import abc
+from abc import ABC
 from enum import Enum
 from typing import Union
 
-from pydantic import AnyUrl, BaseModel, validator
+from pydantic import AnyUrl, root_validator, Extra
+
+from alaas.types.models.utils import TypeCheckMixin
 
 
 class ALWorkerType(Enum):
     """Enum of supported AL Worker"""
     DOCKER = 'docker'
+    UNKNOWN = 'unknown'
 
 
-class ALWorkerConfigBase(BaseModel, abc.ABC):
+class ALWorkerConfigBase(TypeCheckMixin[ALWorkerType], ABC, extra=Extra.ignore):
     url: AnyUrl = AnyUrl('localhost', scheme='')
-    type: ALWorkerType
-
-    __required_type__: ALWorkerType
-
-    @validator('type')
-    def check_layer_type(cls, worker_type: ALWorkerType) -> ALWorkerType:
-        """
-        Checks worker type value provided is the same as the required value.
-        This is to generate validator for check :code:`worker_type` field of subclasses of :class:`ALWorkerType`.
-        """
-        if worker_type != cls.__required_type__:
-            raise ValueError(f'Expected {cls.__required_type__} but got {worker_type}')
-        return worker_type
 
 
 # TODO: add more docker worker support, currently is hard-coded for Triton Docker.
@@ -42,6 +32,14 @@ class TritonDockerConfig(ALWorkerConfigBase):
     __required_type__ = ALWorkerType.DOCKER
 
 
+class OthersConfig(ALWorkerConfigBase, ):
+    __required_type__ = ALWorkerType.UNKNOWN
+
+    @root_validator
+    def raise_fail(cls, values):
+        raise ValueError('Unrecognized type')
+
+
 ALWorkerConfigUnion = Union[
-    TritonDockerConfig
+    TritonDockerConfig, OthersConfig
 ]

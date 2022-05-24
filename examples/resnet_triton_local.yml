@@ -3,7 +3,7 @@ version: 0.1
 active_learning:
   budget: 10
   strategy:
-    algorithm: "LeastConfidence"
+    type: "LeastConfidence"
     infer_model:
       name: "resnet"
       type: torch_hub
