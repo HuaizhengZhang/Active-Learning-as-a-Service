@@ -4,7 +4,8 @@ import torchvision
 import torchvision.transforms as transforms
 
 from alaas.server.serving import TorchServe
-from alaas.server.strategy import LeastConfidence, LeastConfidenceTriton
+from alaas.server.strategy import LeastConfidence, LeastConfidenceTriton, MarginConfidenceTriton, EntropySamplingTriton, \
+    RatioConfidenceTriton, RandomSampling
 from alaas.server.util import ConfigManager
 
 
@@ -29,8 +30,9 @@ def triton_example(model_name, budget, batch_size, address='localhost:8900'):
     # print("preparing data...")
     inputs, targets = next(iter(prepare_data(100)))
     # print(f"start active learning, query number: {budget}...")
-    strategy = LeastConfidenceTriton(source_data=inputs.numpy(), model_name=model_name, batch_size=batch_size,
-                                     address=address)
+    strategy = RandomSampling(source_data=inputs.numpy())
+    # strategy = LeastConfidenceTriton(source_data=inputs.numpy(), model_name=model_name, batch_size=batch_size,
+    #                                   address=address)
     data_index_list = strategy.query(budget)
     print("selected data index: ", data_index_list)
 
