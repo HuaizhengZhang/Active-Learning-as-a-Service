@@ -11,7 +11,6 @@ from fastapi_utils.inferring_router import InferringRouter
 
 from alaas.server.util import ConfigManager
 from alaas.server.util import DBManager
-from alaas.types.models import Config
 
 EXAMPLE_CONFIG_PATH = '/Users/huangyz0918/desktop/alaas/examples/resnet_triton.yml'
 
