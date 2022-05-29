@@ -51,7 +51,7 @@ class TorchHubInferModelConfig(InferModelBase):
     hub_name: str
     model: str
     args: List[str] = Field(default_factory=list)
-    kwargs: Dict[str, Any] = Field(default_factory=dict)
+    kwargs: Dict[str, Any] = Field({'pretrained': True})
 
     __required_type__ = InferModelType.TORCH_HUB
 

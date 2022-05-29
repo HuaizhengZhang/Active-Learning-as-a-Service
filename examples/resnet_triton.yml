@@ -26,3 +26,5 @@ active_learning:
       type: docker
       docker_repo: "nvcr.io/nvidia/tritonserver"
       tag: "22.03-pyt-python-py3"
+      docker_kwargs:
+        auto_remove: false
