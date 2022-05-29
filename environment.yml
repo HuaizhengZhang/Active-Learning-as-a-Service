@@ -7,6 +7,7 @@ dependencies:
   - certifi=2021.5.30
   - cffi=1.14.6
   - chardet=4.0.0
+  - conda-pack=0.6.0
   - cryptography=3.4.7
   - idna=2.10
   - libffi=3.3
@@ -35,6 +36,7 @@ dependencies:
   - pip:
     - docker==5.0.3
     - fastapi~=0.78.0
+    - fastapi-utils~=0.2.1
     - pydantic==1.9.1
     - tritonclient[all]==2.21.0
     - uvicorn==0.17.0

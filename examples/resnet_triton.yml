@@ -7,8 +7,9 @@ active_learning:
     infer_model:
       name: "resnet"
       type: torch_hub
-      hub_name: "pytorch/vision:v0.9.0"
+      hub_name: "pytorch/vision:release/0.12"
       model: "resnet18"
+      conda_env: my-pytorch
       batch_size: 4
       input:
         - data_type: TYPE_FP32

@@ -34,8 +34,7 @@ class TritonPythonModelConverter(object):
         torch_hub_config_obj = torch_hub_config.to_model_config_dict()
         model_config_pb2 = json_format.ParseDict(torch_hub_config_obj, model_config_pb2)
         # Add environment parameters
-        # TODO: configurable execution env parameters
-        model_parameter = ModelParameter(string_value="$$TRITON_MODEL_DIRECTORY/../my-pytorch.tar.gz")
+        model_parameter = ModelParameter(string_value=f'$$TRITON_MODEL_DIRECTORY/../{torch_hub_config.conda_env}.tar.gz')
         model_config_pb2.parameters['EXECUTION_ENV_PATH'].CopyFrom(model_parameter)
         model_config_msg_str = text_format.MessageToString(
                 model_config_pb2,

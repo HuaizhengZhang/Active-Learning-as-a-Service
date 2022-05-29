@@ -1,4 +1,6 @@
+conda-pack==0.6.0
 fastapi~=0.78.0
+fastapi-utils~=0.2.1
 numpy>=1.13
 scikit_learn>=0.20.0
 setuptools==58.0.4

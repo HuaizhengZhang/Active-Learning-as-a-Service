@@ -21,6 +21,7 @@ class InferModelType(Enum):
 class InferModelBase(TypeCheckMixin[InferModelType], abc.ABC):
     name: str
     batch_size: PositiveInt
+    conda_env: str
     input: List[ModelInputOutput]
     output: List[ModelInputOutput]
     instance_group: List[Any] = Field(default_factory=list)
@@ -57,7 +58,7 @@ class TorchHubInferModelConfig(InferModelBase):
     @property
     def _exclude_keys(self):
         return {
-            'type', 'hub_name', 'model', 'kwargs', 'batch_size'
+            'type', 'hub_name', 'model', 'kwargs', 'batch_size', 'conda_env',
         }
 
 
