@@ -31,6 +31,6 @@ class Config(BaseSettings):
 if __name__ == '__main__':
     import yaml
 
-    with open('../../../examples/resnet_triton_local.yml') as f:
+    with open('../../../examples/resnet_triton.yml') as f:
         obj = yaml.safe_load(f)
     print(Config.parse_obj(obj))

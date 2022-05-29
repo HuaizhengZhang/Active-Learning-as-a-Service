@@ -30,9 +30,9 @@ def triton_example(model_name, budget, batch_size, address='localhost:8900'):
     # print("preparing data...")
     inputs, targets = next(iter(prepare_data(100)))
     # print(f"start active learning, query number: {budget}...")
-    strategy = RandomSampling(source_data=inputs.numpy())
-    # strategy = LeastConfidenceTriton(source_data=inputs.numpy(), model_name=model_name, batch_size=batch_size,
-    #                                   address=address)
+    # strategy = RandomSampling(source_data=inputs.numpy())
+    strategy = LeastConfidenceTriton(source_data=inputs.numpy(), model_name=model_name, batch_size=batch_size,
+                                     address=address)
     data_index_list = strategy.query(budget)
     print("selected data index: ", data_index_list)
 
@@ -51,18 +51,15 @@ if __name__ == '__main__':
     # read the global configuration.
     config_path = 'resnet_triton.yml'
     cfg_manager = ConfigManager(config_path)
-    strategy = cfg_manager.get_al_config()['strategy']
-    algorithm = strategy['algorithm']
-    batch_size = strategy['infer_model']['batch_size']
-    model_name = strategy['infer_model']['name']
-    budget = cfg_manager.get_al_config()['budget']
-    address = cfg_manager.get_al_config()['al_server']['address']
+    budget = cfg_manager.budget
+    batch_size = cfg_manager.strategy.infer_model.batch_size
+    model_name = cfg_manager.strategy.infer_model.name
 
     # run the built-in pytorch server example.
     # torch_example(cfg_manager.get_al_config()['budget'])
     # run th NVIDIA triton inference server example.
     print("=====================")
-    print(f"active learning: {algorithm}, budget: {budget}")
+    print(f"active learning: {cfg_manager.strategy.type.name}, budget: {budget}")
     print(f"AL model: {model_name}, inference batch: {batch_size}")
     print("=====================")
-    triton_example(model_name=model_name, batch_size=batch_size, budget=budget, address=address)
+    triton_example(model_name=model_name, batch_size=batch_size, budget=budget, address=cfg_manager.al_server.url)
