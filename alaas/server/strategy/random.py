@@ -3,7 +3,6 @@
     @author huangyz0918 (huangyz0918@gmail.com)
     @date 06/05/2022
 """
-import logging
 import warnings
 
 import numpy as np

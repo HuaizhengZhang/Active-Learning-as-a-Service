@@ -15,6 +15,12 @@ class Client:
         """
         return requests.post(self.server_url + "/push", params={'asynchronous': asynchronous}, json=data_list)
 
+    def update_config(self, new_config):
+        """
+        update the server configuration.
+        """
+        return requests.post(self.server_url + "/update_cfg", files={'config': open(new_config, 'rb')})
+
     def query(self, budget):
         """
         start the active learning process on current data pool with the given budget.
@@ -23,12 +29,13 @@ class Client:
 
 
 if __name__ == '__main__':
+    server_config_pth = "../../examples/resnet_triton.yml"
     remote_file_list = "../../examples/test_images.txt"
     with open(remote_file_list) as file:
         url_list = [line.rstrip() for line in file.readlines()]
-        print(url_list[:5])
 
         # define the ALaaS client, and push data to the server.
         client = Client("http://0.0.0.0:8001")
-        print(client.push(data_list=url_list[:5]).text)
-        print(client.query(10).text)
+        print(client.push(data_list=url_list).text)
+        print(client.query(5).text)
+        # print(client.update_config(server_config_pth).json())
