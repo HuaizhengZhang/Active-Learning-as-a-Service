@@ -21,10 +21,11 @@ if __name__ == '__main__':
     # prepare init model
     infer_model_config = config.active_learning.strategy.infer_model
     worker_config = config.active_learning.al_server.worker
+    model_repository_path = worker_config.model_repository_path
     # convert the requested infer model to Triton Python model, and save to local model repository
-    env_exporter = CondaEnvExporter(model_repository_path=worker_config.model_repository_path)
-    env_exporter.export('my-pytorch')
-    converter = TritonPythonModelConverter(model_repository_path=worker_config.model_repository_path)
+    env_exporter = CondaEnvExporter(model_repository_path=model_repository_path)
+    env_exporter.export(infer_model_config.conda_env)
+    converter = TritonPythonModelConverter(model_repository_path=model_repository_path)
     converter.from_torch_hub(infer_model_config)
 
     # serve the infer model with Triton

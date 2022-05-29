@@ -23,8 +23,3 @@ class CondaEnvExporter(object):
 
         CondaEnv.from_name(env_name).pack(output=str(output_path))
         logger.info(f'Successfully export the conda environment {env_name} to {output_path}.')
-
-
-if __name__ == '__main__':
-    exporter = CondaEnvExporter(Path('/home/zll/.alaas/models/'))
-    exporter.export('my-pytorch')
