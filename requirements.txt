@@ -1,5 +1,5 @@
 conda-pack==0.6.0
-fastapi~=0.78.0
+fastapi~=0.77.1
 fastapi-utils~=0.2.1
 numpy>=1.13
 scikit_learn>=0.20.0
@@ -14,3 +14,5 @@ torch~=1.10.0
 pillow~=8.4.0
 torchvision~=0.11.1
 uvicorn==0.17.0
+yaml~=0.2.5
+opencv-python

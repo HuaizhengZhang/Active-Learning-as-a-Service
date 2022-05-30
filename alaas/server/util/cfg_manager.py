@@ -30,10 +30,6 @@ class ConfigManager:
         return self.config.version
 
     @property
-    def budget(self):
-        return self.config.active_learning.budget
-
-    @property
     def strategy(self):
         return self.config.active_learning.strategy
 

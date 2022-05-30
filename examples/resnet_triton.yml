@@ -1,7 +1,6 @@
 name: "IMG_CLASSIFICATION"
 version: 0.1
 active_learning:
-  budget: 10
   strategy:
     type: "LeastConfidence"
     infer_model:

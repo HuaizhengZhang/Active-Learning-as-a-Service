@@ -36,6 +36,8 @@ if __name__ == '__main__':
 
         # define the ALaaS client, and push data to the server.
         client = Client("http://0.0.0.0:8001")
-        print(client.push(data_list=url_list).text)
-        print(client.query(5).text)
+        # update the server config from client.
         # print(client.update_config(server_config_pth).json())
+        # print(client.push(data_list=url_list).text)
+        print(client.query(5).text)
+

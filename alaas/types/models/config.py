@@ -17,7 +17,6 @@ class ALServerConfig(BaseModel):
 
 
 class ALConfig(BaseModel):
-    budget: PositiveInt
     strategy: ALStrategyConfigUnion
     al_server: ALServerConfig
 

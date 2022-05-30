@@ -1,7 +1,9 @@
+import json
 import os
 from typing import List
 from pathlib import Path
 
+import numpy as np
 import uvicorn
 import urllib.request
 from urllib.parse import urlparse
@@ -9,10 +11,10 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
-from alaas.server.util import ConfigManager
-from alaas.server.util import DBManager
-
-EXAMPLE_CONFIG_PATH = '/Users/huangyz0918/desktop/alaas/examples/resnet_triton.yml'
+from alaas.server.util import DBManager, ConfigManager
+from alaas.server.strategy import LeastConfidenceTriton
+from alaas.server.util import load_image_data_as_np
+from alaas.types import ALStrategyType
 
 server_mod = FastAPI()
 router = InferringRouter()
@@ -49,7 +51,7 @@ class ALServerMod:
                     "config": ConfigManager.load_config(self.server_config_path).dict()}
         else:
             return {"message": "Welcome to ALaaS Server!",
-                    "config": f"Please make sure you have a server configuration at: {self.alaas_home}server_config.yml"}
+                    "config": f"Please make sure you have a server configuration at: {self.server_config_path}"}
 
     @router.post("/update_cfg")
     async def update_cfg(self, config: UploadFile = File(...)):
@@ -73,7 +75,23 @@ class ALServerMod:
 
     @router.get("/query")
     def query(self, budget: int):
-        return {"budget": budget}
+        cfg_manager = ConfigManager(self.server_config_path)
+        batch_size = cfg_manager.strategy.infer_model.batch_size
+        model_name = cfg_manager.strategy.infer_model.name
+        strategy = cfg_manager.strategy.type
+        address = cfg_manager.al_server.url
+
+        data_pool = self.db_manager.read_records()
+
+        # TODO:  automatic data processing and data augmentation.
+        results = []
+        _, _, input_data = load_image_data_as_np(data_pool)
+        if strategy == ALStrategyType.LEAST_CONFIDENCE:
+            al_learner = LeastConfidenceTriton(source_data=input_data, model_name=model_name,
+                                               batch_size=batch_size,
+                                               address=address)
+            results = al_learner.query(budget)
+        return {"strategy": strategy, "budget": budget, "query_results": json.dumps(results.tolist())}
 
     @router.post("/push")
     def push(self, data: List[str], asynchronous: bool):
@@ -95,7 +113,7 @@ class Server:
         if restful:
             server_mod.include_router(router)
             uvicorn.run(server_mod, host=host, port=port)
-            # TODO: don't block at server starting line, continue to setup the configuration file.
+            # TODO: don't block at server starting line, continue to setup the input configuration file.
             # x = requests.post(f"http://{host}:{port}/update_cfg", data=self.cfg_manager.config.dict())
         else:
             # TODO: RPC Server
@@ -103,4 +121,5 @@ class Server:
 
 
 if __name__ == "__main__":
-    Server(config_path=EXAMPLE_CONFIG_PATH).start(host="0.0.0.0", port=8001)
+    example_config = '/Users/huangyz0918/desktop/alaas/examples/resnet_triton.yml'
+    Server(example_config).start(host="0.0.0.0", port=8001)

@@ -51,7 +51,7 @@ if __name__ == '__main__':
     # read the global configuration.
     config_path = 'resnet_triton.yml'
     cfg_manager = ConfigManager(config_path)
-    budget = cfg_manager.budget
+    budget = 10
     batch_size = cfg_manager.strategy.infer_model.batch_size
     model_name = cfg_manager.strategy.infer_model.name
 
