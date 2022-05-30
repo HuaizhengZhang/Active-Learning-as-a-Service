@@ -21,6 +21,6 @@ def load_image_data_as_np(data_pool):
     for data in data_pool:
         img_md5_list.append(data[0])
         img_uuid_list.append(data[1])
-        img_list.append(img_transform(np.float32(cv2.imread(data[2]))).numpy())
+        img_list.append(img_transform(cv2.imread(data[2])).numpy())
     img_list = np.array(img_list, dtype=np.float32)
     return img_md5_list, img_uuid_list, img_list
