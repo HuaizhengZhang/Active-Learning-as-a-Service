@@ -38,6 +38,7 @@ dependencies:
     - fastapi~=0.78.0
     - fastapi-utils~=0.2.1
     - pydantic==1.9.1
+    - python-multipart==0.0.5
     - tritonclient[all]==2.21.0
     - uvicorn==0.17.0
     - wakatime==13.1.0

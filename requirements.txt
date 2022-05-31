@@ -7,6 +7,7 @@ setuptools==58.0.4
 tqdm==4.62.3
 tritonclient~=2.21.0
 pydantic==1.9.1
+python-multipart==0.0.5
 pyyaml~=6.0
 docker~=5.0.3
 requests~=2.26.0
