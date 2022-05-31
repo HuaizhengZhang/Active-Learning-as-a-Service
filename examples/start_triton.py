@@ -5,8 +5,6 @@ Author: Li Yuanming
 Email: yuanmingleee@gmail.com
 Date: May 19, 2022
 """
-import json
-
 from alaas.server.serving.triton.control import triton_container_run, triton_container_stop
 from alaas.server.serving.triton.converter import TritonPythonModelConverter
 from alaas.server.serving.triton.env_exporter import CondaEnvExporter

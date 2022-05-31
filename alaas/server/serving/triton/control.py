@@ -7,13 +7,8 @@ Date: May 17, 2022
 """
 import os
 from enum import Enum
-from typing import Union
+from typing import Union, Optional, List
 
-"""
-Author: Li Yuanming
-Email: yuanmingleee@gmail.com
-Date: Apr 30, 2022
-"""
 import docker
 from docker.errors import ImageNotFound
 from docker.types import Mount, DeviceRequest
@@ -23,7 +18,7 @@ def triton_container_run(
         docker_repo='nvcr.io/nvidia/tritonserver',
         version: str = ...,
         variation: Union[str, Enum] = 'py3',
-        device: str = 'cpu',
+        gpus: Optional[Union[List[Union[int, str]], int, str]] = ...,
         model_repository_path: os.PathLike = ...,
         docker_kwargs: dict = None,
         command: dict = None,
@@ -47,7 +42,15 @@ def triton_container_run(
               support for PyTorch and Python backends only.
             - The `tf2-python-py3` image contains the Triton Inference Server with
               support for TensorFlow 2.x and Python backends only.
-        device (str):
+        gpus: Set GPU devices passed to Docker container. Possible values examples:
+            - [0, 1, 2] or ['GPU-fef8089b']: a list of GPU UUID(s) or index(es).
+            - 1 or 2: number of devices will be used.
+            - 'all' or -1: all GPUs will be accessible, this is the default value in base CUDA container images.
+            - None: no GPU will be accessible, but driver capabilities will be enabled.
+            - unset (Ellipsis): `nvidia-container-runtime` will have the same behavior as `runc`
+                (i.e., neither GPUs nor capabilities are exposed).
+            Check Nvidia-Docker documentation for reference:
+              https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/user-guide.html#gpu-enumeration
         model_repository_path (os.PathLike): Local path to the Triton model repository. This directory will be
             mounted to the target docker container using the bind type and read only.
         docker_kwargs (dict): Additionally Docker keyword arguments to run the docker container. The
@@ -76,7 +79,7 @@ def triton_container_run(
     kwargs = {
         'detach': True, 'auto_remove': True, 'shm_size': '1G',
         'ports': {'8000': 8000, '8001': 8001, '8002': 8002},
-        'mounts': mounts,
+        'mounts': mounts, 'device_requests': list(),
     }
     kwargs.update(docker_kwargs or _empty_dict)
 
@@ -85,12 +88,21 @@ def triton_container_run(
     trtserver_kwargs_.update(command or _empty_dict)
     tritonserver_command = ' '.join(map(lambda kv: f'--{kv[0]}={kv[1]}', trtserver_kwargs_.items()))
 
-    if device != 'cpu':
-        name, device_ids = device.split(':')
-        assert name == 'cuda', f'Unrecognized device name: "{name}" in device "{device}"'
-        device_ids = device_ids.split(',')
-        dr = DeviceRequest(driver='nvidia', device_ids=device_ids, capabilities=[['gpu']])
-        kwargs['device_requests'] = [dr]
+    if gpus is None:
+        gpus = 0
+    elif gpus == 'all':
+        gpus = -1
+
+    if gpus is ...:
+        # Neither GPUs nor capabilities are exposed
+        pass
+    elif isinstance(gpus, int) or gpus == 'all':
+        dr = DeviceRequest(driver='nvidia', count=gpus, capabilities=[['gpu']])
+        kwargs['device_requests'].append(dr)
+    elif isinstance(gpus, list):
+        dr = DeviceRequest(driver='nvidia', device_ids=gpus, capabilities=[['gpu']])
+        kwargs['device_requests'].append(dr)
+
     try:
         container = client.containers.run(
             image_name, f'tritonserver {tritonserver_command}',
