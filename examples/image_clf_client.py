@@ -7,7 +7,7 @@ Client example for image classification active learning tasks.
 from alaas.client import Client
 
 
-def start_client(budget=100):
+def start_client(budget=5):
     remote_file_list = "test_images.txt"
     # prepare the unlabeled data urls.
     with open(remote_file_list) as file:
