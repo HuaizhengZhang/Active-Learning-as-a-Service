@@ -1,5 +1,6 @@
-import json
 import os
+import json
+import importlib
 from typing import List
 from pathlib import Path
 
@@ -11,8 +12,8 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
 from alaas.server.util import DBManager, ConfigManager
-from alaas.server.strategy import LeastConfidenceTriton
 from alaas.server.util import load_image_data_as_np
+from alaas.server.serving import triton_inference_func
 from alaas.types import ALStrategyType
 
 server_mod = FastAPI()
@@ -80,17 +81,24 @@ class ALServerMod:
         strategy = cfg_manager.strategy.type
         address = cfg_manager.al_server.url
 
-        data_pool = self.db_manager.read_records()
-
         # TODO:  automatic data processing and data augmentation.
-        results = []
-        _, _, input_data = load_image_data_as_np(data_pool)
-        if strategy == ALStrategyType.LEAST_CONFIDENCE:
-            al_learner = LeastConfidenceTriton(source_data=input_data, model_name=model_name,
-                                               batch_size=batch_size,
-                                               address=address)
+        try:
+            al_method = getattr(importlib.import_module('alaas.server.strategy'), strategy.value)
+            if strategy == ALStrategyType.RANDOM_SAMPLING:
+                al_learner = al_method()
+            else:
+                al_learner = al_method(infer_func=triton_inference_func,
+                                       proc_func=load_image_data_as_np,
+                                       model_name=model_name,
+                                       batch_size=batch_size,
+                                       address=address)
             results = al_learner.query(budget)
-        return {"strategy": strategy, "budget": budget, "query_results": json.dumps(results.tolist())}
+            return {"strategy": strategy, "budget": budget, "query_results": json.dumps(results.tolist())}
+        except Exception as e:
+            return {
+                "message": str(e),
+                "status": "failed",
+            }
 
     @router.post("/push")
     def push(self, data: List[str], asynchronous: bool):

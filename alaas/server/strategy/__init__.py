@@ -1,3 +1,2 @@
-from .uncertainty import LeastConfidence, LeastConfidenceTriton, MarginConfidenceTriton, RatioConfidenceTriton, \
-    EntropySamplingTriton
+from .uncertainty import LeastConfidence, LeastConfidence, MarginConfidence, RatioConfidence, EntropySampling
 from .random import RandomSampling

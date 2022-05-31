@@ -3,8 +3,6 @@
     @author huangyz0918 (huangyz0918@gmail.com)
     @date 06/05/2022
 """
-import warnings
-
 import numpy as np
 from .base import Strategy
 
@@ -14,13 +12,10 @@ class RandomSampling(Strategy):
     Randomly Selected the query samples.
     """
 
-    def __init__(self, source_data):
-        super(RandomSampling, self).__init__(None, source_data)
-        self.source_data = np.array(self.db_manager.read_records())
+    def __init__(self):
+        super(RandomSampling, self).__init__(None, None)
 
     def query(self, n):
-        data_num = self.source_data.shape[0]
-        if n > data_num:
-            n = data_num
-            warnings.warn("You have query more samples than the current pool size, return all available data.")
-        return self.source_data[np.random.choice(data_num, n, replace=False)]
+        self.check_query_num(n)
+        path_list = np.array([x[2] for x in self.data_pool])
+        return path_list[np.random.choice(len(self.data_pool), n, replace=False)]

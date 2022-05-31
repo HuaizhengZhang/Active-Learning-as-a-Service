@@ -1,2 +1,2 @@
 from .torch import TorchServe
-from .base import ServeClient
+from .triton import triton_inference_func
