@@ -18,9 +18,9 @@ def start_client(budget=5):
         # update the server configuration file.
         client.update_config("./resnet_triton.yml")
         # push the data urls.
-        # client.push(data_list=url_list)
+        client.push(data_list=url_list)
         # start querying.
-        print(client.query(budget).text)
+        # print(client.query(budget).text)
 
 
 if __name__ == '__main__':

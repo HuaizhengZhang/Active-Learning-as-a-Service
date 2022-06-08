@@ -1,6 +1,7 @@
 import os
 import json
 import importlib
+import numpy as np
 from typing import List
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
 from alaas.server.util import DBManager, ConfigManager
-from alaas.server.util import load_image_data_as_np
+from alaas.server.util import load_images_data_as_np, load_image_data_as_np
 from alaas.server.serving import triton_inference_func
 from alaas.types import ALStrategyType
 
@@ -33,12 +34,23 @@ class ALServerMod:
 
     def download_data(self, asynchronous=False):
         path_list = []
+        cfg_manager = ConfigManager(self.server_config_path)
+        model_name = cfg_manager.strategy.infer_model.name
+        address = cfg_manager.al_server.url
         Path(self.alaas_home).mkdir(parents=True, exist_ok=True)
+        # TODO: async func here.
         for url in self.data_urls:
             data_save_path = self.alaas_home + os.path.basename(urlparse(url).path)
             urllib.request.urlretrieve(url, data_save_path)
             path_list.append(data_save_path)
-            self.db_manager.insert_record(data_save_path)
+            if asynchronous:
+                inference_result = np.array(triton_inference_func(
+                    np.array(load_image_data_as_np(data_save_path), dtype=np.float32), 1,
+                    model_name=model_name, address=address
+                ))
+                self.db_manager.insert_record(data_save_path, inference_result)
+            else:
+                self.db_manager.insert_record(data_save_path, None)
         return path_list
 
     def check_config(self):
@@ -88,7 +100,7 @@ class ALServerMod:
                 al_learner = al_method()
             else:
                 al_learner = al_method(infer_func=triton_inference_func,
-                                       proc_func=load_image_data_as_np,
+                                       proc_func=load_images_data_as_np,
                                        model_name=model_name,
                                        batch_size=batch_size,
                                        address=address)

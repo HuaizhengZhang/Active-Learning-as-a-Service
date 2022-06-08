@@ -1,7 +1,7 @@
 """
     Data processing and augmentation toolkit.
 """
-
+import cv2
 import numpy as np
 from torchvision import transforms
 
@@ -13,8 +13,11 @@ img_transform = transforms.Compose([
 ])
 
 
-def load_image_data_as_np(data_pool):
-    import cv2
+def load_image_data_as_np(image_path):
+    return img_transform(cv2.imread(image_path)).numpy()
+
+
+def load_images_data_as_np(data_pool):
     img_list = []
     img_md5_list = []
     img_uuid_list = []
