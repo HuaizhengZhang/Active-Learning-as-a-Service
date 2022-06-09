@@ -17,9 +17,9 @@ class DBManager:
         try:
             sqlite3.register_adapter(np.ndarray, adapt_array)
             sqlite3.register_converter("ARRAY", convert_array)
-            self.conn = sqlite3.connect(db_file, detect_types=sqlite3.PARSE_DECLTYPES)
+            self.conn = sqlite3.connect(db_file, detect_types=sqlite3.PARSE_DECLTYPES, check_same_thread=False)
             self.cursor = self.conn.cursor()
-            self.cursor.execute("CREATE TABLE AL_POOL (MD5 TEXT, UUID TEXT, DATA TEXT, INFER ARRAY);")
+            self.cursor.execute("CREATE TABLE IF NOT EXISTS AL_POOL (MD5 TEXT, UUID TEXT, DATA TEXT, INFER ARRAY);")
         except Exception as e:
             print(e)
 
@@ -60,6 +60,13 @@ class DBManager:
         Update the inference result according to the given UUID.
         """
         self.cursor.execute("UPDATE AL_POOL SET INFER = ? WHERE UUID = ?", (infer_result, data_uuid))
+        self.conn.commit()
+
+    def update_inference_md5(self, data_md5, infer_result):
+        """
+        Update the inference result according to the given MD5.
+        """
+        self.cursor.execute("UPDATE AL_POOL SET INFER = ? WHERE MD5 = ?", (infer_result, data_md5))
         self.conn.commit()
 
     def read_records(self, with_infer=False):

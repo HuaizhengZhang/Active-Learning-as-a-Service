@@ -1,3 +1,4 @@
+import hashlib
 import os
 import json
 import importlib
@@ -47,7 +48,11 @@ class AsyncUrlProc(Thread):
             np.array(self.proc_func(data_save_path), dtype=np.float32), 1,
             model_name=self.model_name, address=self.server_addr
         ))
-        self.db_manager.insert_record(data_save_path, inference_result)
+        file_id = hashlib.md5(data_save_path.encode('utf-8')).hexdigest()
+        if self.db_manager.check_row(file_id):
+            self.db_manager.update_inference_md5(file_id, inference_result)
+        else:
+            self.db_manager.insert_record(data_save_path, inference_result)
 
 
 @cbv(router)
@@ -67,7 +72,6 @@ class ALServerMod:
         model_name = cfg_manager.strategy.infer_model.name
         address = cfg_manager.al_server.url
         Path(self.alaas_home).mkdir(parents=True, exist_ok=True)
-        # TODO: async func here.
         proc_threads = []
         for url in self.data_urls:
             if asynchronous:

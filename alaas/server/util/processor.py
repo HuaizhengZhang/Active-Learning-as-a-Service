@@ -14,7 +14,7 @@ img_transform = transforms.Compose([
 
 
 def load_image_data_as_np(image_path):
-    return img_transform(cv2.imread(image_path)).numpy()
+    return np.array([img_transform(cv2.imread(image_path)).numpy()], dtype=np.float32)
 
 
 def load_images_data_as_np(data_pool):
