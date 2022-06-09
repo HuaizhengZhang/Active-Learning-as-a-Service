@@ -1,6 +1,8 @@
 import os
 import json
 import importlib
+from threading import Thread
+
 import numpy as np
 from typing import List
 from pathlib import Path
@@ -21,6 +23,33 @@ server_mod = FastAPI()
 router = InferringRouter()
 
 
+class AsyncUrlProc(Thread):
+    """
+    Async Data Downloader and Processor.
+    """
+
+    def __init__(self, data_url, model_name, server_url, inference_func=triton_inference_func,
+                 proc_func=load_image_data_as_np):
+        Thread.__init__(self)
+        self.inference_func = inference_func
+        self.proc_func = proc_func
+        self.model_name = model_name
+        self.server_addr = server_url
+        self.data_url = data_url
+        home_path = str(Path.home())
+        self.alaas_home = home_path + "/.alaas/"
+        self.db_manager = DBManager(self.alaas_home + 'index.db')
+
+    def run(self):
+        data_save_path = self.alaas_home + os.path.basename(urlparse(self.data_url).path)
+        urllib.request.urlretrieve(self.data_url, data_save_path)
+        inference_result = np.array(self.inference_func(
+            np.array(self.proc_func(data_save_path), dtype=np.float32), 1,
+            model_name=self.model_name, address=self.server_addr
+        ))
+        self.db_manager.insert_record(data_save_path, inference_result)
+
+
 @cbv(router)
 class ALServerMod:
 
@@ -39,18 +68,20 @@ class ALServerMod:
         address = cfg_manager.al_server.url
         Path(self.alaas_home).mkdir(parents=True, exist_ok=True)
         # TODO: async func here.
+        proc_threads = []
         for url in self.data_urls:
-            data_save_path = self.alaas_home + os.path.basename(urlparse(url).path)
-            urllib.request.urlretrieve(url, data_save_path)
-            path_list.append(data_save_path)
             if asynchronous:
-                inference_result = np.array(triton_inference_func(
-                    np.array(load_image_data_as_np(data_save_path), dtype=np.float32), 1,
-                    model_name=model_name, address=address
-                ))
-                self.db_manager.insert_record(data_save_path, inference_result)
+                processor = AsyncUrlProc(data_url=url, model_name=model_name, server_url=address,
+                                         inference_func=triton_inference_func, proc_func=load_image_data_as_np)
+                processor.start()
+                proc_threads.append(processor)
             else:
+                data_save_path = self.alaas_home + os.path.basename(urlparse(url).path)
+                urllib.request.urlretrieve(url, data_save_path)
+                path_list.append(data_save_path)
                 self.db_manager.insert_record(data_save_path, None)
+        for thread in proc_threads:
+            thread.join()
         return path_list
 
     def check_config(self):

@@ -20,7 +20,7 @@ def start_client(budget=5):
         # push the data urls.
         client.push(data_list=url_list)
         # start querying.
-        # print(client.query(budget).text)
+        print(client.query(budget).text)
 
 
 if __name__ == '__main__':

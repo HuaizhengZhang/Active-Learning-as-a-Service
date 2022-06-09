@@ -76,7 +76,7 @@ class DBManager:
         Check is a row exists in the dataset by MD5.
         """
         result = self.cursor.execute("SELECT EXISTS(SELECT 1 FROM AL_POOL WHERE MD5 = ?);", (md5,)).fetchall()
-        return result[0][0] is not 0
+        return result[0][0] != 0
 
 
 def chunks(lst, n):
