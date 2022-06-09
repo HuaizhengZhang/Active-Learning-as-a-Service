@@ -24,10 +24,18 @@ class LeastConfidence(Strategy):
     def query(self, n):
         self.check_query_num(n)
         path_list = np.array([x[2] for x in self.data_pool])
-        md5_list, uuid_list, data_list = self.proc_func(self.data_pool)
-        probs = self.infer_func(data_list, self.batch_size,
-                                model_name=self.model_name, address=self.address)
-        uncertainties = np.amax(probs, axis=1)
+        # update the inference results.
+        while len(self.data_not_inferred) > 0:
+            md5_list, uuid_list, data_list = self.proc_func(self.data_not_inferred)
+            probs = self.infer_func(data_list, self.batch_size,
+                                    model_name=self.model_name, address=self.address)
+            for i in range(len(probs)):
+                self.db_manager.update_inference(uuid_list[i], probs[i])
+            self.data_not_inferred = self.db_manager.get_rows(inferred=False)
+        # query the inference table.
+        rows = self.db_manager.get_rows()
+        infer_probs = [x[3] for x in rows]
+        uncertainties = np.amax(infer_probs, axis=1)
         return path_list[uncertainties.argsort()[:n]]
 
 
@@ -47,10 +55,18 @@ class MarginConfidence(Strategy):
     def query(self, n):
         self.check_query_num(n)
         path_list = np.array([x[2] for x in self.data_pool])
-        md5_list, uuid_list, data_list = self.proc_func(self.data_pool)
-        probs = self.infer_func(data_list, self.batch_size,
-                                model_name=self.model_name, address=self.address)
-        probs_sorted = -np.sort(-np.array(probs))
+        # update the inference results.
+        while len(self.data_not_inferred) > 0:
+            md5_list, uuid_list, data_list = self.proc_func(self.data_not_inferred)
+            probs = self.infer_func(data_list, self.batch_size,
+                                    model_name=self.model_name, address=self.address)
+            for i in range(len(probs)):
+                self.db_manager.update_inference(uuid_list[i], probs[i])
+            self.data_not_inferred = self.db_manager.get_rows(inferred=False)
+        # query the inference table.
+        rows = self.db_manager.get_rows()
+        infer_probs = [x[3] for x in rows]
+        probs_sorted = -np.sort(-np.array(infer_probs))
         difference_list = probs_sorted[:, 0] - probs_sorted[:, 1]
         return path_list[difference_list.argsort()[:n]]
 
@@ -70,10 +86,18 @@ class RatioConfidence(Strategy):
     def query(self, n):
         self.check_query_num(n)
         path_list = np.array([x[2] for x in self.data_pool])
-        md5_list, uuid_list, data_list = self.proc_func(self.data_pool)
-        probs = self.infer_func(data_list, self.batch_size,
-                                model_name=self.model_name, address=self.address)
-        probs_sorted = -np.sort(-np.array(probs))
+        # update the inference results.
+        while len(self.data_not_inferred) > 0:
+            md5_list, uuid_list, data_list = self.proc_func(self.data_not_inferred)
+            probs = self.infer_func(data_list, self.batch_size,
+                                    model_name=self.model_name, address=self.address)
+            for i in range(len(probs)):
+                self.db_manager.update_inference(uuid_list[i], probs[i])
+            self.data_not_inferred = self.db_manager.get_rows(inferred=False)
+        # query the inference table.
+        rows = self.db_manager.get_rows()
+        infer_probs = [x[3] for x in rows]
+        probs_sorted = -np.sort(-np.array(infer_probs))
         difference_list = probs_sorted[:, 0] / probs_sorted[:, 1]
         return path_list[difference_list.argsort()[:n]]
 
@@ -93,9 +117,16 @@ class EntropySampling(Strategy):
     def query(self, n):
         self.check_query_num(n)
         path_list = np.array([x[2] for x in self.data_pool])
-        md5_list, uuid_list, data_list = self.proc_func(self.data_pool)
-        probs = self.infer_func(data_list, self.batch_size,
-                                model_name=self.model_name, address=self.address)
-
-        entropy = (probs * np.log(probs)).sum(1)
+        # update the inference results.
+        while len(self.data_not_inferred) > 0:
+            md5_list, uuid_list, data_list = self.proc_func(self.data_not_inferred)
+            probs = self.infer_func(data_list, self.batch_size,
+                                    model_name=self.model_name, address=self.address)
+            for i in range(len(probs)):
+                self.db_manager.update_inference(uuid_list[i], probs[i])
+            self.data_not_inferred = self.db_manager.get_rows(inferred=False)
+        # query the inference table.
+        rows = self.db_manager.get_rows()
+        infer_probs = [x[3] for x in rows]
+        entropy = (infer_probs * np.log(infer_probs)).sum(1)
         return path_list[entropy.argsort()[:n]]

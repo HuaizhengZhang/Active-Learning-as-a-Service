@@ -78,6 +78,15 @@ class DBManager:
         else:
             return self.cursor.execute("SELECT MD5, UUID, DATA FROM AL_POOL").fetchall()
 
+    def get_rows(self, inferred=True):
+        """
+        Get all the rows with inference results.
+        """
+        if inferred:
+            return self.cursor.execute("SELECT MD5, UUID, DATA, INFER FROM AL_POOL WHERE INFER IS NOT NULL").fetchall()
+        else:
+            return self.cursor.execute("SELECT MD5, UUID, DATA, INFER FROM AL_POOL WHERE INFER IS NULL").fetchall()
+
     def check_row(self, md5):
         """
         Check is a row exists in the dataset by MD5.

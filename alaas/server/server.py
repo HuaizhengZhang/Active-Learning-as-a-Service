@@ -40,6 +40,11 @@ class AsyncUrlProc(Thread):
         home_path = str(Path.home())
         self.alaas_home = home_path + "/.alaas/"
         self.db_manager = DBManager(self.alaas_home + 'index.db')
+        self._return = None
+
+    def join(self, *args):
+        Thread.join(self, *args)
+        return self._return
 
     def run(self):
         data_save_path = self.alaas_home + os.path.basename(urlparse(self.data_url).path)
@@ -53,6 +58,7 @@ class AsyncUrlProc(Thread):
             self.db_manager.update_inference_md5(file_id, inference_result)
         else:
             self.db_manager.insert_record(data_save_path, inference_result)
+        self._return = data_save_path
 
 
 @cbv(router)
@@ -85,7 +91,7 @@ class ALServerMod:
                 path_list.append(data_save_path)
                 self.db_manager.insert_record(data_save_path, None)
         for thread in proc_threads:
-            thread.join()
+            path_list.append(thread.join())
         return path_list
 
     def check_config(self):
@@ -128,7 +134,6 @@ class ALServerMod:
         strategy = cfg_manager.strategy.type
         address = cfg_manager.al_server.url
 
-        # TODO:  automatic data processing and data augmentation.
         try:
             al_method = getattr(importlib.import_module('alaas.server.strategy'), strategy.value)
             if strategy == ALStrategyType.RANDOM_SAMPLING:
