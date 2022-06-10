@@ -2,10 +2,11 @@
 Triton inference Client-side function
 """
 import uuid
-import numpy as np
 
 import tritonclient.http as httpclient
 from tritonclient.utils import np_to_triton_dtype
+
+from alaas.server.util import chunks
 
 
 class ServeClient:
@@ -34,8 +35,7 @@ class ServeClient:
 
 def triton_inference_func(source_data, batch_size, model_name, address):
     probs = []
-    for batch in np.array_split(source_data, int(len(source_data) / batch_size)):
-        for result in ServeClient().infer(batch, model_name, address=address):
-            probs.append(result)
+    for batch in chunks(source_data, batch_size):
+        for item in ServeClient().infer(batch, model_name, address=address):
+            probs.append(item)
     return probs
-
