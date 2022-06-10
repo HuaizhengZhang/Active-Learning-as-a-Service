@@ -95,12 +95,6 @@ class DBManager:
         return result[0][0] != 0
 
 
-def chunks(lst, n):
-    """Yield successive n-sized chunks from lst."""
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-
 def adapt_array(arr):
     """
     Adapt the numpy.array to SQLite.
