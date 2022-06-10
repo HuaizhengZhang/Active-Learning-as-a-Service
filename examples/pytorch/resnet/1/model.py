@@ -73,6 +73,7 @@ class TritonPythonModel:
 
         # Instantiate the PyTorch model
         self.resnet_model = resnet18(pretrained=True).to(self.device)
+        self.resnet_model.eval()
 
     def execute(self, requests):
         """`execute` must be implemented in every Python model. `execute`

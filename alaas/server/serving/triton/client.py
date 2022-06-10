@@ -1,6 +1,7 @@
 """
 Triton inference Client-side function
 """
+import uuid
 import numpy as np
 
 import tritonclient.http as httpclient
@@ -23,7 +24,7 @@ class ServeClient:
             response = cli.infer(
                 model_name,
                 inputs,
-                request_id=str(1),
+                request_id=str(uuid.uuid4()),
                 outputs=outputs
             )
 
@@ -38,15 +39,3 @@ def triton_inference_func(source_data, batch_size, model_name, address):
             probs.append(result)
     return probs
 
-
-if __name__ == '__main__':
-    shape = (16, 3, 224, 224)
-    np.random.seed(0)
-    input_data = np.random.rand(*shape).astype(np.float32)
-
-    outputs_0 = triton_inference_func(input_data, 2, 'resnet', '54.251.31.100:8900')
-    outputs_1 = triton_inference_func(input_data, 4, 'resnet', '54.251.31.100:8900')
-
-    print(np.shape(outputs_0), np.shape(outputs_1))
-    print(np.amax(outputs_0, axis=0).argsort()[:1], np.shape(outputs_0))
-    print(np.amax(outputs_1, axis=0).argsort()[:1], np.shape(outputs_1))

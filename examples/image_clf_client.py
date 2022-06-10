@@ -19,7 +19,7 @@ def start_client(budget=5):
         client.update_config("./resnet_triton.yml")
         start_time = time.time()
         # push the data urls.
-        print(client.push(data_list=url_list, asynchronous=False).text)
+        print(client.push(data_list=url_list, asynchronous=True).text)
         end_download_time = time.time()
         # start querying.
         print(client.query(budget).text)
