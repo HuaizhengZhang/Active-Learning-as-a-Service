@@ -34,7 +34,7 @@ class ServeClient:
 
 def triton_inference_func(source_data, batch_size, model_name, address):
     probs = []
-    for batch in np.array_split(source_data, int(len(source_data)) / batch_size):
+    for batch in np.array_split(source_data, int(len(source_data) / batch_size)):
         for result in ServeClient().infer(batch, model_name, address=address):
             probs.append(result)
     return probs
