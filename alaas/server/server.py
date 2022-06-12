@@ -9,16 +9,16 @@ from typing import List
 from pathlib import Path
 
 import uvicorn
-import urllib.request
 from urllib.parse import urlparse
 from fastapi import FastAPI, File, UploadFile
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
+from alaas.types import ALStrategyType
 from alaas.server.util import DBManager, ConfigManager
 from alaas.server.util import load_images_data_as_np, load_image_data_as_np
 from alaas.server.serving import triton_inference_func
-from alaas.types import ALStrategyType
+from alaas.server.util import UrlDownloader
 
 server_mod = FastAPI()
 router = InferringRouter()
@@ -48,7 +48,7 @@ class AsyncUrlProc(Thread):
 
     def run(self):
         data_save_path = self.alaas_home + os.path.basename(urlparse(self.data_url).path)
-        urllib.request.urlretrieve(self.data_url, data_save_path)
+        UrlDownloader().download(data_save_path, self.data_url)
         inference_result = np.array(self.inference_func(
             np.array(self.proc_func(data_save_path), dtype=np.float32), 1,
             model_name=self.model_name, address=self.server_addr
@@ -87,7 +87,7 @@ class ALServerMod:
                 proc_threads.append(processor)
             else:
                 data_save_path = self.alaas_home + os.path.basename(urlparse(url).path)
-                urllib.request.urlretrieve(url, data_save_path)
+                UrlDownloader().download(data_save_path, url)
                 path_list.append(data_save_path)
                 self.db_manager.insert_record(data_save_path, None)
         for thread in proc_threads:
@@ -180,5 +180,5 @@ class Server:
 
 
 if __name__ == "__main__":
-    example_config = '/Users/huangyz0918/desktop/alaas/examples/resnet_triton.yml'
+    example_config = '/Users/huangyz0918/desktop/alaas/examples/config.yml'
     Server(example_config).start(host="0.0.0.0", port=8001)

@@ -1,7 +1,51 @@
 import uuid
 import hashlib
 import sqlite3
+import boto3
+import urllib.request
 import numpy as np
+from abc import ABC, abstractmethod
+
+
+class Downloader(ABC):
+    """
+    Downloader: the base data downloader class.
+    """
+
+    @abstractmethod
+    def download(self, filename, **kwargs):
+        pass
+
+
+class UrlDownloader(Downloader):
+    """
+    Url Downloader: the data downloader of given urls.
+    """
+
+    def download(self, filename, url=None):
+        if url:
+            urllib.request.urlretrieve(url, filename)
+            return filename
+        else:
+            return None
+
+
+class S3Downloader(Downloader):
+    """
+    S3 Downloader: the data downloader of AWS S3.
+    """
+
+    def __init__(self, aws_access_key_id, aws_secret_access_key):
+        self.client = boto3.client(
+            's3',
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+        )
+
+    def download(self, filename, bucket_name=None, object_name=None):
+        with open(filename, 'wb') as f:
+            self.client.download_fileobj(bucket_name, object_name, f)
+            return filename
 
 
 class DBManager:

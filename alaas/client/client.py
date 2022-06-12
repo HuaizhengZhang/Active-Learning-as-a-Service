@@ -29,7 +29,7 @@ class Client:
 
 
 if __name__ == '__main__':
-    server_config_pth = "../../examples/resnet_triton.yml"
+    server_config_pth = "../../examples/config.yml"
     remote_file_list = "../../examples/test_images.txt"
     with open(remote_file_list) as file:
         url_list = [line.rstrip() for line in file.readlines()]
