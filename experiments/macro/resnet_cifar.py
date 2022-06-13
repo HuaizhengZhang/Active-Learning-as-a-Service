@@ -12,6 +12,7 @@
 11. Our Workflow: Download Data + Inference Each (Async) -> Active Learning.
 """
 
+import json
 import time
 
 from alaas.server import Server
@@ -28,12 +29,11 @@ def start_server():
         Server(config_path=SERVER_CONFIG).start(host="0.0.0.0", port=8001)
 
 
-def start_client(budget=5):
+def start_client(budget=5000):
     """
     Start the client.
     """
-    # TODO: replace with AWS S3.
-    remote_file_list = "test_images.txt"
+    remote_file_list = "cifar_s3_all.txt"
     # prepare the unlabeled data urls.
     with open(remote_file_list) as file:
         url_list = [line.rstrip() for line in file.readlines()]
@@ -44,10 +44,12 @@ def start_client(budget=5):
         client.update_config("./config.yml")
         start_time = time.time()
         # push the data urls.
-        print(client.push(data_list=url_list, asynchronous=False).text)
+        client.push(data_list=url_list, asynchronous=True)
         end_download_time = time.time()
         # start querying.
-        print(client.query(budget).text)
+        results = client.query(budget).json()
+        with open('/Users/huangyz0918/desktop/lc_cifar_5k_from_all.json', 'w') as f:
+            json.dump(results, f)
         end_al_time = time.time()
         return end_al_time - start_time, end_download_time - start_time, end_al_time - end_download_time
 

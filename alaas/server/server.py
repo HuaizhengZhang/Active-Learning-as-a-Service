@@ -2,7 +2,7 @@ import hashlib
 import os
 import json
 import importlib
-from threading import Thread
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 from typing import List
@@ -15,7 +15,7 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
 from alaas.types import ALStrategyType
-from alaas.server.util import DBManager, ConfigManager
+from alaas.server.util import DBManager, ConfigManager, S3Downloader
 from alaas.server.util import load_images_data_as_np, load_image_data_as_np
 from alaas.server.serving import triton_inference_func
 from alaas.server.util import UrlDownloader
@@ -24,41 +24,25 @@ server_mod = FastAPI()
 router = InferringRouter()
 
 
-class AsyncUrlProc(Thread):
-    """
-    Async Data Downloader and Processor.
-    """
-
-    def __init__(self, data_url, model_name, server_url, inference_func=triton_inference_func,
-                 proc_func=load_image_data_as_np):
-        Thread.__init__(self)
-        self.inference_func = inference_func
-        self.proc_func = proc_func
-        self.model_name = model_name
-        self.server_addr = server_url
-        self.data_url = data_url
-        home_path = str(Path.home())
-        self.alaas_home = home_path + "/.alaas/"
-        self.db_manager = DBManager(self.alaas_home + 'index.db')
-        self._return = None
-
-    def join(self, *args):
-        Thread.join(self, *args)
-        return self._return
-
-    def run(self):
-        data_save_path = self.alaas_home + os.path.basename(urlparse(self.data_url).path)
-        UrlDownloader().download(data_save_path, self.data_url)
-        inference_result = np.array(self.inference_func(
-            np.array(self.proc_func(data_save_path), dtype=np.float32), 1,
-            model_name=self.model_name, address=self.server_addr
-        ))
-        file_id = hashlib.md5(data_save_path.encode('utf-8')).hexdigest()
-        if self.db_manager.check_row(file_id):
-            self.db_manager.update_inference_md5(file_id, inference_result)
-        else:
-            self.db_manager.insert_record(data_save_path, inference_result)
-        self._return = data_save_path
+def download_and_infer(data_url, model_name, server_url, inference_func=triton_inference_func,
+                       proc_func=load_image_data_as_np):
+    home_path = str(Path.home())
+    alaas_home = home_path + "/.alaas/"
+    db_manager = DBManager(alaas_home + 'index.db')
+    # TODO: For experiment only.
+    data_save_path = alaas_home + data_url
+    S3Downloader("", "", "alaas") \
+        .download(data_save_path, data_url)
+    inference_result = np.array(inference_func(
+        np.array(proc_func(data_save_path), dtype=np.float32), 1,
+        model_name=model_name, address=server_url
+    ))
+    file_id = hashlib.md5(data_save_path.encode('utf-8')).hexdigest()
+    if db_manager.check_row(file_id):
+        db_manager.update_inference_md5(file_id, inference_result)
+    else:
+        db_manager.insert_record(data_save_path, inference_result)
+    return data_save_path
 
 
 @cbv(router)
@@ -79,19 +63,23 @@ class ALServerMod:
         address = cfg_manager.al_server.url
         Path(self.alaas_home).mkdir(parents=True, exist_ok=True)
         proc_threads = []
+        executor = ThreadPoolExecutor(10)
         for url in self.data_urls:
             if asynchronous:
-                processor = AsyncUrlProc(data_url=url, model_name=model_name, server_url=address,
-                                         inference_func=triton_inference_func, proc_func=load_image_data_as_np)
-                processor.start()
-                proc_threads.append(processor)
+                proc_threads.append(
+                    executor.submit(download_and_infer, data_url=url, model_name=model_name, server_url=address,
+                                    inference_func=triton_inference_func, proc_func=load_image_data_as_np))
             else:
-                data_save_path = self.alaas_home + os.path.basename(urlparse(url).path)
-                UrlDownloader().download(data_save_path, url)
+                # data_save_path = self.alaas_home + os.path.basename(urlparse(url).path)
+                # UrlDownloader().download(data_save_path, url)
+                # TODO: For experiment only.
+                data_save_path = self.alaas_home + url
+                S3Downloader("", "", "alaas") \
+                    .download(data_save_path, url)
                 path_list.append(data_save_path)
                 self.db_manager.insert_record(data_save_path, None)
         for thread in proc_threads:
-            path_list.append(thread.join())
+            path_list.append(thread.result())
         return path_list
 
     def check_config(self):

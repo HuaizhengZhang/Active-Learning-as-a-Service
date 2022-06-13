@@ -1,3 +1,4 @@
+import os
 import uuid
 import hashlib
 import sqlite3
@@ -35,17 +36,22 @@ class S3Downloader(Downloader):
     S3 Downloader: the data downloader of AWS S3.
     """
 
-    def __init__(self, aws_access_key_id, aws_secret_access_key):
-        self.client = boto3.client(
-            's3',
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key,
-        )
+    def __init__(self, aws_access_key_id, aws_secret_access_key, bucket_name):
+        session = boto3.session.Session()
+        self.bucket = session.resource('s3',
+                                       aws_access_key_id=aws_access_key_id,
+                                       aws_secret_access_key=aws_secret_access_key).Bucket(bucket_name)
 
-    def download(self, filename, bucket_name=None, object_name=None):
-        with open(filename, 'wb') as f:
-            self.client.download_fileobj(bucket_name, object_name, f)
-            return filename
+    def download(self, filename, object_name=None):
+        self.bucket.download_file(object_name, filename)
+        return filename
+
+    def download_all(self, dir_path):
+        for s3_object in list(self.bucket.objects.all()):
+            path, filename = os.path.split(s3_object.key)
+            with open('/Users/huangyz0918/desktop/cifar_s3_all.txt', 'a') as the_file:
+                the_file.write(f'{filename}\n')
+            self.bucket.download_file(s3_object.key, dir_path + filename)
 
 
 class DBManager:
@@ -157,3 +163,13 @@ def convert_array(text):
     Convert the SQLite bytes to numpy.array.
     """
     return np.frombuffer(text)
+
+
+if __name__ == '__main__':
+    import time
+
+    downloader = S3Downloader("", "", "alaas")
+    print(downloader.download("/Users/huangyz0918/desktop/0000_airplane.jpg", '0000_airplane.jpg'))
+    start_time = time.time()
+    downloader.download_all("/Users/huangyz0918/desktop/data/")
+    print(f"finished downloading, time: {time.time() - start_time}")
