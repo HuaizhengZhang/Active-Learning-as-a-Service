@@ -12,7 +12,6 @@ from torchvision import transforms
 
 def build_train_transform(crop_size, mean=0., std=1.):
     transform = transforms.Compose([
-        transforms.Grayscale(),
         transforms.RandomResizedCrop(crop_size),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
@@ -25,7 +24,6 @@ def build_train_transform(crop_size, mean=0., std=1.):
 def build_test_transform(resize_size, center_crop_size=None, mean=0., std=1.):
     center_crop_size = center_crop_size or resize_size
     transform = transforms.Compose([
-        transforms.Grayscale(),
         transforms.Resize(resize_size),
         transforms.CenterCrop(center_crop_size),
         transforms.ToTensor(),

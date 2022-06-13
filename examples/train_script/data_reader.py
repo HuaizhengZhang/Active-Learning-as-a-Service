@@ -6,7 +6,7 @@ Email: yuanmingleee@gmail.com
 Date: June 9, 2022
 """
 import pandas as pd
-from PIL.Image import Image
+from PIL import Image
 from torchvision.datasets import VisionDataset
 
 
@@ -17,7 +17,7 @@ class DataFrameDataset(VisionDataset):
         image_paths = df.iloc[:, 0].values.tolist()
         labels = df.iloc[:, 1].values.tolist()
         classes, class_to_idx = self._find_classes(labels)
-        labels = list(map(class_to_idx, df.iloc[:, 1].values.tolist()))
+        labels = list(map(class_to_idx.__getitem__, df.iloc[:, 1].values.tolist()))
 
         self.samples = list(zip(image_paths, labels))
         self.classes = classes

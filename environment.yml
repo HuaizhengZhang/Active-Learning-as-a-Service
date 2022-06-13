@@ -13,6 +13,7 @@ dependencies:
   - libffi=3.3
   - ncurses=6.2
   - openssl=1.1.1
+  - pandas=1.3.5
   - pip=21.1.3
   - pycosat=0.6.3
   - pycparser=2.20

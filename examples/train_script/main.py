@@ -10,6 +10,7 @@ import logging
 import os
 import sys
 import time
+from ast import literal_eval
 
 import torch
 from torch import nn
@@ -30,6 +31,10 @@ from data_reader import DataFrameDataset
 
 def parse_args():
     parser = argparse.ArgumentParser("Train ResNet")
+    parser.add_argument('--train_csv_path', type=str, required=True, help='CSV path for training')
+    parser.add_argument('--test_csv_path', type=str, required=True, help='CSV path for testing')
+    parser.add_argument('--normalize_mean', type=str, default='(0., 0., 0.)', help='Normalization mean')
+    parser.add_argument('--normalize_std', type=str, default='(1., 1., 1.)', help='Normalization std')
     # Data pre-processing
     parser.add_argument('--batch_size', type=int, default=64, help='batch size')
     parser.add_argument('--val_batch_size', type=int, default=64, help='Validation size')
@@ -49,8 +54,15 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=0, help='random seed')
     args = parser.parse_args()
 
+    args.normalize_mean = literal_eval(args.normalize_mean)
+    args.normalize_std = literal_eval(args.normalize_std)
     args.save = f'eval-{args.save}-{time.strftime("%Y%m%d-%H%M%S")}'
     os.mkdir(args.save)
+
+    if not torch.cuda.is_available():
+        logging.warning('no gpu device available')
+        args.cuda = False
+    setattr(args, 'device', torch.device('cuda' if args.cuda else 'cpu'))
 
     return args
 
@@ -84,7 +96,7 @@ def setup_modules(args):
     model = resnet50(pretrained=True)
     model.fc = nn.Linear(in_features=model.fc.in_features, out_features=args.num_classes)
     if args.cuda:
-        model = model.cuda()
+        model = model.to(args.device)
 
     return model
 
@@ -96,7 +108,7 @@ def setup_optimizers(model: 'torch.nn.Module', lr, momentum, weight_decay, epoch
     return optimizer, scheduler
 
 
-def train(train_loader, model, criterion, optimizer, auxiliary, report_freq, epoch, **kwargs):
+def train(train_loader, model, criterion, optimizer, report_freq, epoch, device, **kwargs):
     objs = AvgrageMeter()
     top1 = AvgrageMeter()
     model.train()
@@ -104,14 +116,11 @@ def train(train_loader, model, criterion, optimizer, auxiliary, report_freq, epo
     with logging_redirect_tqdm():
         with tqdm(train_loader, desc=f'train {epoch}') as tbar:
             for step, (inputs, targets) in enumerate(tbar):
-                inputs, targets = inputs.cuda(), targets.cuda()
+                inputs, targets = inputs.to(device), targets.to(device)
 
                 optimizer.zero_grad()
-                logits, logits_aux = model(inputs)
+                logits = model(inputs)
                 loss = criterion(logits, targets)
-                if auxiliary:
-                    loss_aux = criterion(logits_aux, targets)
-                    loss += kwargs['auxiliary_weight'] * loss_aux
                 loss.backward()
                 optimizer.step()
 
@@ -127,7 +136,7 @@ def train(train_loader, model, criterion, optimizer, auxiliary, report_freq, epo
     return top1.avg, objs.avg
 
 
-def infer(val_loader, model, criterion, report_freq, epoch, **kwargs):
+def infer(val_loader, model, criterion, report_freq, epoch, device, **kwargs):
     objs = AvgrageMeter()
     top1 = AvgrageMeter()
     model.eval()
@@ -135,9 +144,9 @@ def infer(val_loader, model, criterion, report_freq, epoch, **kwargs):
     with logging_redirect_tqdm():
         with tqdm(val_loader, desc=f'Val  {epoch}') as tbar:
             for step, (inputs, targets) in enumerate(tbar):
-                inputs, targets = inputs.cuda(), targets.cuda()
+                inputs, targets = inputs.to(device), targets.to(device)
 
-                logits, _ = model(inputs)
+                logits = model(inputs)
                 loss = criterion(logits, targets)
 
                 prec1, = accuracy(logits, targets, topk=(1,))
@@ -155,14 +164,10 @@ def infer(val_loader, model, criterion, report_freq, epoch, **kwargs):
 if __name__ == "__main__":
     args = parse_args()
 
-    if not torch.cuda.is_available():
-        logging.warning('no gpu device available')
-        args.cuda = False
-
     log_format = '%(asctime)s %(message)s'
     logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                         format=log_format, datefmt='%m/%d %I:%M:%S %p')
-    fh = logging.FileHandler(os.path.join(args.log_dir, 'log.txt'))
+    fh = logging.FileHandler(os.path.join(args.save, 'log.txt'))
     fh.setFormatter(logging.Formatter(log_format))
     logging.getLogger().addHandler(fh)
 
@@ -194,7 +199,6 @@ if __name__ == "__main__":
     for epoch in range(args.epochs):
         scheduler.step()
         logging.info('epoch %d lr %e', epoch, scheduler.get_lr()[0])
-        model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
         train_acc, train_obj = train(train_loader, model, criterion, optimizer, epoch=epoch, **vars(args))
         logging.info('train_acc %f', train_acc)
@@ -203,5 +207,5 @@ if __name__ == "__main__":
         logging.info('valid_acc %f', valid_acc)
 
         if valid_acc > valid_acc_best:
-            torch.save(model.state_dict(), os.path.join(args.log_dir, 'weights.pt'))
+            torch.save(model.state_dict(), os.path.join(args.save, 'weights.pt'))
             valid_acc_best = valid_acc
