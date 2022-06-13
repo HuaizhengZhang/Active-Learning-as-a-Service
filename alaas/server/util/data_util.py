@@ -163,13 +163,3 @@ def convert_array(text):
     Convert the SQLite bytes to numpy.array.
     """
     return np.frombuffer(text)
-
-
-if __name__ == '__main__':
-    import time
-
-    downloader = S3Downloader("", "", "alaas")
-    print(downloader.download("/Users/huangyz0918/desktop/0000_airplane.jpg", '0000_airplane.jpg'))
-    start_time = time.time()
-    downloader.download_all("/Users/huangyz0918/desktop/data/")
-    print(f"finished downloading, time: {time.time() - start_time}")

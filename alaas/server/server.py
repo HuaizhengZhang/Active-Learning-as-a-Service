@@ -165,8 +165,3 @@ class Server:
         else:
             # TODO: RPC Server
             raise NotImplementedError("gRPC server is not available right now.")
-
-
-if __name__ == "__main__":
-    example_config = '/Users/huangyz0918/desktop/alaas/examples/config.yml'
-    Server(example_config).start(host="0.0.0.0", port=8001)
