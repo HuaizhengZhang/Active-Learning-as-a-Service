@@ -14,7 +14,7 @@ from ast import literal_eval
 
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from torchvision.models import resnet50
 from tqdm import tqdm
 from tqdm.contrib.logging import logging_redirect_tqdm
@@ -32,12 +32,12 @@ from data_reader import DataFrameDataset
 def parse_args():
     parser = argparse.ArgumentParser("Train ResNet")
     parser.add_argument('--train_csv_path', type=str, required=True, help='CSV path for training')
-    parser.add_argument('--test_csv_path', type=str, required=True, help='CSV path for testing')
     parser.add_argument('--normalize_mean', type=str, default='(0., 0., 0.)', help='Normalization mean')
     parser.add_argument('--normalize_std', type=str, default='(1., 1., 1.)', help='Normalization std')
     # Data pre-processing
     parser.add_argument('--batch_size', type=int, default=64, help='batch size')
     parser.add_argument('--val_batch_size', type=int, default=64, help='Validation size')
+    parser.add_argument('--split_ratio', type=float, default=0.9, help='Split ratio for training set/total')
     parser.add_argument('--num_workers', type=int, default=os.cpu_count(), help='Number of workers for data loading')
     parser.add_argument('--image_resize', type=int, default=224, help='Size of image resizing')
     # Optimizer
@@ -69,7 +69,7 @@ def parse_args():
 
 def setup_dataset(
         train_csv_path,
-        test_csv_path,
+        split_ratio,
         batch_size,
         val_batch_size,
         image_resize,
@@ -81,12 +81,14 @@ def setup_dataset(
 
     """
     train_transform = build_train_transform(crop_size=image_resize, mean=mean, std=std)
-    test_transform = build_test_transform(resize_size=image_resize, mean=mean, std=std)
+    # test_transform = build_test_transform(resize_size=image_resize, mean=mean, std=std)
     train_set = DataFrameDataset(root=train_csv_path, transform=train_transform)
-    test_set = DataFrameDataset(root=test_csv_path, transform=test_transform)
+    train_size = int(split_ratio * len(train_set))
+    val_size = len(train_set) - train_size
+    train_set, val_set = random_split(train_set, (train_size, val_size))
 
     train_loader = DataLoader(train_set, batch_size=batch_size, num_workers=num_workers, pin_memory=True, shuffle=True)
-    val_loader = DataLoader(test_set, batch_size=val_batch_size, num_workers=num_workers, pin_memory=True,
+    val_loader = DataLoader(val_set, batch_size=val_batch_size, num_workers=num_workers, pin_memory=True,
                             shuffle=False)
 
     return train_loader, val_loader
@@ -178,7 +180,7 @@ if __name__ == "__main__":
     criterion = torch.nn.CrossEntropyLoss()
     train_loader, test_loader = setup_dataset(
         train_csv_path=args.train_csv_path,
-        test_csv_path=args.test_csv_path,
+        split_ratio=args.split_ratio,
         batch_size=args.batch_size,
         val_batch_size=args.val_batch_size,
         image_resize=args.image_resize,
@@ -187,6 +189,7 @@ if __name__ == "__main__":
     )
     # set num_classes
     setattr(args, 'num_classes', len(train_loader.dataset.classes))
+    print('Number of classes:', args.num_classes)
 
     model = setup_modules(args)
 
