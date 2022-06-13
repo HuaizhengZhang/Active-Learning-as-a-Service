@@ -133,7 +133,7 @@ class ALServerMod:
                                        batch_size=batch_size,
                                        address=address)
             results = al_learner.query(budget)
-            return {"strategy": strategy, "budget": budget, "query_results": json.dumps(results.tolist())}
+            return {"strategy": strategy, "budget": budget, "query_results": results.tolist()}
         except Exception as e:
             return {
                 "message": str(e),

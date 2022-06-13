@@ -29,11 +29,11 @@ def start_server():
         Server(config_path=SERVER_CONFIG).start(host="0.0.0.0", port=8001)
 
 
-def start_client(budget=5000):
+def start_client(budget=200):
     """
     Start the client.
     """
-    remote_file_list = "cifar_s3_all.txt"
+    remote_file_list = "cifar_s3_1000.txt"
     # prepare the unlabeled data urls.
     with open(remote_file_list) as file:
         url_list = [line.rstrip() for line in file.readlines()]
@@ -48,7 +48,7 @@ def start_client(budget=5000):
         end_download_time = time.time()
         # start querying.
         results = client.query(budget).json()
-        with open('/Users/huangyz0918/desktop/lc_cifar_5k_from_all.json', 'w') as f:
+        with open('./mc_cifar_5k_from_all.json', 'w') as f:
             json.dump(results, f)
         end_al_time = time.time()
         return end_al_time - start_time, end_download_time - start_time, end_al_time - end_download_time
