@@ -198,7 +198,7 @@ if __name__ == "__main__":
         eta_min=args.eta_min,
     )
 
-    valid_acc_best = 0
+    epoch_best, valid_acc_best = 0, 0
     for epoch in range(args.epochs):
         scheduler.step()
         logging.info('epoch %d lr %e', epoch, scheduler.get_lr()[0])
@@ -212,3 +212,8 @@ if __name__ == "__main__":
         if valid_acc > valid_acc_best:
             torch.save(model.state_dict(), os.path.join(args.save, 'weights.pt'))
             valid_acc_best = valid_acc
+            epoch_best = epoch
+
+        if epoch - epoch_best > 30:
+            print('Accuracy not improving in 30 epochs, early stop.')
+            exit(0)
