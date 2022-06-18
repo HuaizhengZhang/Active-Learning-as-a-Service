@@ -5,7 +5,7 @@
 4. Model: ResNet-50 PyTorch
 5. Storage: AWS S3 (ap-southeast-1)
 6. Data Pool Size: 50000
-7. Budget: 1000
+7. Budget: 10000
 8. Active Learning Strategy: the Least Confidence Sampling
 9. Baseline: DeepAL, ModAL (Block)
 10. Baseline Workflow: Download Data -> Inference All -> Active Learning.
@@ -29,13 +29,12 @@ def start_server():
         Server(config_path=SERVER_CONFIG).start(host="0.0.0.0", port=8001)
 
 
-def start_client(budget=200):
+def start_client(budget=10000, pool_size=50000):
     """
     Start the client.
     """
-    remote_file_list = "cifar_s3_1000.txt"
     # prepare the unlabeled data urls.
-    with open(remote_file_list) as file:
+    with open(f"cifar_s3_{pool_size}.txt") as file:
         url_list = [line.rstrip() for line in file.readlines()]
 
         # define the ALaaS client, and push data to the server.
@@ -44,14 +43,19 @@ def start_client(budget=200):
         client.update_config("./config.yml")
         start_time = time.time()
         # push the data urls.
-        client.push(data_list=url_list, asynchronous=True)
+        client.push(data_list=url_list, asynchronous=False)
         end_download_time = time.time()
         # start querying.
         results = client.query(budget).json()
-        with open('./mc_cifar_5k_from_all.json', 'w') as f:
-            json.dump(results, f)
         end_al_time = time.time()
-        return end_al_time - start_time, end_download_time - start_time, end_al_time - end_download_time
+        total_time = end_al_time - start_time
+        download_time = end_download_time - start_time
+        al_time = end_al_time - end_download_time
+        results.update({'total_time': total_time, 'download_time': download_time, 'al_time': al_time,
+                        'qps': pool_size / total_time})
+        with open(f'./lc_cifar_{budget}_from_{pool_size}_deepal.json', 'w') as f:
+            json.dump(results, f)
+        return total_time, download_time, al_time
 
 
 if __name__ == '__main__':

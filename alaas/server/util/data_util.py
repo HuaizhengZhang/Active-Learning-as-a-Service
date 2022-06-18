@@ -49,7 +49,7 @@ class S3Downloader(Downloader):
     def download_all(self, dir_path):
         for s3_object in list(self.bucket.objects.all()):
             path, filename = os.path.split(s3_object.key)
-            with open('/Users/huangyz0918/desktop/cifar_s3_all.txt', 'a') as the_file:
+            with open('/Users/huangyz0918/desktop/cifar_s3_50000.txt', 'a') as the_file:
                 the_file.write(f'{filename}\n')
             self.bucket.download_file(s3_object.key, dir_path + filename)
 
