@@ -1,4 +1,15 @@
-# ALaaS: Active learning as a service.
+# ALaaS: Active Learning as a Service.
+
+![PyPI](https://img.shields.io/pypi/v/alaas?color=green) [![Downloads](https://pepy.tech/badge/alaas)](https://pepy.tech/project/alaas) [![Testing](https://github.com/MLSysOps/alaas/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/MLSysOps/alaas/actions/workflows/main.yml)
+
+![](./docs/images/logo.svg)
+
+ALaaS is featured for
+
+- :rocket: **Fast** Use the stage-level parallel method to achieve over 10x speedup than normal active learning process.
+- :collision:	**Elastic** Scale up and down multiple active workers on single or multiple GPU devices.
+- :hatching_chick: **Easy-to-use** With <10 lines off code to start APIs prototype a active learning workflow instantly.
+
 
 ## Installation
 
