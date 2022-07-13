@@ -54,12 +54,29 @@ the example output will be something like:
 ```bash
 preparing data...
 Files already downloaded and verified
-start active learning, query number: 1000...
-[uri_1, uri_2, uri_3, ...., uri_n]
+start active learning, query number: 100...
+query results: [uri_1, uri_2, uri_3, ...., uri_n]
 ```
 
-which are the uri of input data selected by active learning.
+which are the a list of data samples selected by active learning.
 
+## Support Strategy 
+
+Currently we supported several active learning strategies shown in the following table,
+
+|Type|Setting|Abbr|Strategy|Year|Reference|
+|:--:|:--:|:--:|:--:|:--:|:--:|
+|Random|Pool-base|RS|Random Sampling|-|-|
+|Uncertainty|Pool-base|LC|Least Confidence Sampling|1994|[DD Lew et al.](https://arxiv.org/pdf/cmp-lg/9407020)|
+|Uncertainty|Pool-base|MC|Margin Confidence Sampling|2001|[T Scheffer et al.](https://link.springer.com/chapter/10.1007/3-540-44816-0_31)|
+|Uncertainty|Pool-base|RC|Ratio Confidence Sampling|2009|[B Settles et al.](https://research.cs.wisc.edu/techreports/2009/TR1648.pdf)|
+|Uncertainty|Pool-base|ES|Entropy Sampling|2009|[B Settles et al.](https://research.cs.wisc.edu/techreports/2009/TR1648.pdf)|
+|Uncertainty|Pool-base|BALD|Bayesian Active Learning Disagreement|2017|[Y Gal et al.](https://arxiv.org/abs/1703.02910)|
+|Clustering|Pool-base|KCG|K-Center Greedy Sampling|2017|[Ozan Sener et al.](https://www.semanticscholar.org/paper/A-Geometric-Approach-to-Active-Learning-for-Neural-Sener-Savarese/82fb7661d892a7412726de6ead14269139d0310c)|
+|Clustering|Pool-base|KM|K-Means Sampling|2011|[Z Bodó et al.](http://proceedings.mlr.press/v16/bodo11a/bodo11a.pdf)|
+|Clustering|Pool-base|CS|Core-Set Selection Approach|2018|[Ozan Sener et al.](https://arxiv.org/abs/1708.00489?context=cs)|
+|Diversity|Pool-base|DBAL|Diverse Mini-batch Sampling|2019|[Fedor Zhdanov](https://arxiv.org/abs/1901.05954)|
+|Adversarial|Pool-base|DFAL|DeepFool Active Learning|2018|[M Ducoffe et al.](https://arxiv.org/abs/1802.09841)|
 
 ## License
 
