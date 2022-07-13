@@ -6,7 +6,7 @@
 
 ALaaS is featured for
 
-- :rocket: **Fast** Use the stage-level parallel method to achieve over 10x speedup than normal active learning process.
+- :rocket: **Fast** Use the stage-level parallel approach to achieve over 10x speedup than normal active learning process.
 - :collision:	**Elastic** Scale up and down multiple active workers on single or multiple GPU devices.
 - :hatching_chick: **Easy-to-use** With <10 lines of code to start APIs that prototype an active learning workflow.
 
