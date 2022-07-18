@@ -21,6 +21,7 @@ class ALStrategyType(Enum):
     MARGIN_CONFIDENCE = 'MarginConfidence'
     RATIO_CONFIDENCE = 'RatioConfidence'
     ENTROPY_SAMPLING = 'EntropySampling'
+    KMEANS_SAMPLING = 'KMeansSampling'
 
 
 class ALStrategyBase(TypeCheckMixin[ALStrategyType], ABC):
@@ -57,10 +58,17 @@ class EntropySamplingConfig(ALStrategyBase):
     __required_type__ = ALStrategyType.ENTROPY_SAMPLING
 
 
+class KMeansSamplingConfig(ALStrategyBase):
+    infer_model: InferModelConfigUnion
+
+    __required_type__ = ALStrategyType.KMEANS_SAMPLING
+
+
 ALStrategyConfigUnion = Union[
     RandomSamplingConfig,
     LeastConfidenceConfig,
     MarginConfidenceConfig,
     RatioConfidenceConfig,
-    EntropySamplingConfig
+    EntropySamplingConfig,
+    KMeansSamplingConfig
 ]
