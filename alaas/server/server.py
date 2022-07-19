@@ -24,6 +24,7 @@ server_mod = FastAPI()
 router = InferringRouter()
 
 
+# TODO: refactor this to allow user configue the processing functions.
 def download_and_infer(data_url, model_name, server_url, inference_func=triton_inference_func,
                        proc_func=load_image_data_as_np):
     home_path = str(Path.home())
