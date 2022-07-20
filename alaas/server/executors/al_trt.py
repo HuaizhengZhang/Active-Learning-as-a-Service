@@ -1,3 +1,9 @@
+"""
+The active learning executor of TensorRT models.
+@author huangyz0918 (huangyz0918@gmail.com)
+@date 28/05/2022
+"""
+
 import torch
 import torch.jit
 import torch.nn.functional as F

@@ -1,3 +1,10 @@
+"""
+Base active learning class.
+@author huangyz0918 (huangyz0918@gmail.com)
+@date 20/07/2022
+"""
+
+
 class Strategy:
     """The basic active learning strategy class"""
 

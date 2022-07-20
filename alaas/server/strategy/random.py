@@ -1,8 +1,9 @@
 """
-    Random sampling methods.
-    @author huangyz0918 (huangyz0918@gmail.com)
-    @date 06/05/2022
+Random sampling methods.
+@author huangyz0918 (huangyz0918@gmail.com)
+@date 06/05/2022
 """
+
 import numpy as np
 from .base import Strategy
 

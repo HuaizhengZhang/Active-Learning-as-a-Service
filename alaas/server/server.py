@@ -1,3 +1,8 @@
+"""
+The basic server of ALaaS.
+@author huangyz0918 (huangyz0918@gmail.com)
+@date 20/07/2022
+"""
 from jina import Flow
 
 from alaas.server.util import ConfigManager

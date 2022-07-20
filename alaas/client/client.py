@@ -1,3 +1,9 @@
+"""
+The Client of ALaaS.
+@author huangyz0918 (huangyz0918@gmail.com)
+@date 28/05/2022
+"""
+
 from urllib.parse import urlparse
 from docarray import Document, DocumentArray
 
