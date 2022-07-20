@@ -5,8 +5,8 @@ with:
 executors:
   - name: al_uncertainty
     uses:
-      jtype: TorchWorker
+      jtype: TRTWorker
       metas:
         py_modules:
-          - al_torch.py
-    replicas: 4
+          - al_trt.py
+    replicas: 1

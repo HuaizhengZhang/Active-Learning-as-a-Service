@@ -12,10 +12,10 @@ class RandomSampling(Strategy):
     Randomly Selected the query samples.
     """
 
-    def __init__(self):
-        super(RandomSampling, self).__init__(None, None)
+    def __init__(self, pool_size, path_mapping):
+        super(RandomSampling, self).__init__(pool_size, path_mapping)
 
-    def query(self, n):
+    def query(self, n, embedding=None):
         self.check_query_num(n)
-        path_list = np.array([x[2] for x in self.data_pool])
-        return path_list[np.random.choice(len(self.data_pool), n, replace=False)]
+        _path_list = np.array(self.path_mapping)
+        return _path_list[np.random.choice(self.pool_size, int(n), replace=False)]

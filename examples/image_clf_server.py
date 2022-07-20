@@ -9,4 +9,4 @@ from alaas.server import Server
 SERVER_CONFIG = './resnet_triton.yml'
 
 if __name__ == '__main__':
-    Server(config_path=SERVER_CONFIG).start(host="0.0.0.0", port=8001)
+    Server(SERVER_CONFIG).start()

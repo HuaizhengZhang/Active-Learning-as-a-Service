@@ -25,11 +25,3 @@ class Config(BaseSettings):
     name: str
     version: str
     active_learning: ALConfig
-
-
-if __name__ == '__main__':
-    import yaml
-
-    with open('../../../examples/resnet_triton.yml') as f:
-        obj = yaml.safe_load(f)
-    print(Config.parse_obj(obj))

@@ -15,28 +15,14 @@ class LeastConfidence(Strategy):
     (https://arxiv.org/pdf/cmp-lg/9407020)
     """
 
-    def __init__(self, infer_func, proc_func, model_name, batch_size, address='localhost:8900'):
-        super(LeastConfidence, self).__init__(infer_func=infer_func, proc_func=proc_func)
-        self.model_name = model_name
-        self.batch_size = batch_size
-        self.address = address
+    def __init__(self, pool_size, path_mapping):
+        super(LeastConfidence, self).__init__(pool_size, path_mapping)
 
-    def query(self, n):
+    def query(self, n, embeddings=None):
         self.check_query_num(n)
-        path_list = np.array([x[2] for x in self.data_pool])
-        # update the inference results.
-        while len(self.data_not_inferred) > 0:
-            md5_list, uuid_list, data_list = self.proc_func(self.data_not_inferred)
-            probs = self.infer_func(data_list, self.batch_size,
-                                    model_name=self.model_name, address=self.address)
-            for i in range(len(probs)):
-                self.db_manager.update_inference(uuid_list[i], probs[i])
-            self.data_not_inferred = self.db_manager.get_rows(inferred=False)
-        # query the inference table.
-        rows = self.db_manager.get_rows()
-        infer_probs = [x[3] for x in rows]
-        uncertainties = np.amax(infer_probs, axis=1)
-        return path_list[uncertainties.argsort()[:n]]
+        _path_list = np.array(self.path_mapping)
+        _uncertainties = np.amax(embeddings, axis=1)
+        return _path_list[_uncertainties.argsort()[:int(n)]]
 
 
 class MarginConfidence(Strategy):
@@ -46,29 +32,15 @@ class MarginConfidence(Strategy):
     (https://link.springer.com/chapter/10.1007/3-540-44816-0_31)
     """
 
-    def __init__(self, infer_func, proc_func, model_name, batch_size, address='localhost:8900'):
-        super(MarginConfidence, self).__init__(infer_func=infer_func, proc_func=proc_func)
-        self.model_name = model_name
-        self.batch_size = batch_size
-        self.address = address
+    def __init__(self, pool_size, path_mapping):
+        super(MarginConfidence, self).__init__(pool_size, path_mapping)
 
-    def query(self, n):
+    def query(self, n, embeddings=None):
         self.check_query_num(n)
-        path_list = np.array([x[2] for x in self.data_pool])
-        # update the inference results.
-        while len(self.data_not_inferred) > 0:
-            md5_list, uuid_list, data_list = self.proc_func(self.data_not_inferred)
-            probs = self.infer_func(data_list, self.batch_size,
-                                    model_name=self.model_name, address=self.address)
-            for i in range(len(probs)):
-                self.db_manager.update_inference(uuid_list[i], probs[i])
-            self.data_not_inferred = self.db_manager.get_rows(inferred=False)
-        # query the inference table.
-        rows = self.db_manager.get_rows()
-        infer_probs = [x[3] for x in rows]
-        probs_sorted = -np.sort(-np.array(infer_probs))
-        difference_list = probs_sorted[:, 0] - probs_sorted[:, 1]
-        return path_list[difference_list.argsort()[:n]]
+        _path_list = np.array(self.path_mapping)
+        _probs_sorted = -np.sort(-np.array(embeddings))
+        _difference = _probs_sorted[:, 0] - _probs_sorted[:, 1]
+        return _path_list[_difference.argsort()[:int(n)]]
 
 
 class RatioConfidence(Strategy):
@@ -77,29 +49,15 @@ class RatioConfidence(Strategy):
     Reference: Active learning literature survey. (https://minds.wisconsin.edu/handle/1793/60660)
     """
 
-    def __init__(self, infer_func, proc_func, model_name, batch_size, address='localhost:8900'):
-        super(RatioConfidence, self).__init__(infer_func=infer_func, proc_func=proc_func)
-        self.model_name = model_name
-        self.batch_size = batch_size
-        self.address = address
+    def __init__(self, pool_size, path_mapping):
+        super(RatioConfidence, self).__init__(pool_size, path_mapping)
 
-    def query(self, n):
+    def query(self, n, embeddings=None):
         self.check_query_num(n)
-        path_list = np.array([x[2] for x in self.data_pool])
-        # update the inference results.
-        while len(self.data_not_inferred) > 0:
-            md5_list, uuid_list, data_list = self.proc_func(self.data_not_inferred)
-            probs = self.infer_func(data_list, self.batch_size,
-                                    model_name=self.model_name, address=self.address)
-            for i in range(len(probs)):
-                self.db_manager.update_inference(uuid_list[i], probs[i])
-            self.data_not_inferred = self.db_manager.get_rows(inferred=False)
-        # query the inference table.
-        rows = self.db_manager.get_rows()
-        infer_probs = [x[3] for x in rows]
-        probs_sorted = -np.sort(-np.array(infer_probs))
-        difference_list = probs_sorted[:, 0] / probs_sorted[:, 1]
-        return path_list[difference_list.argsort()[:n]]
+        _path_list = np.array(self.path_mapping)
+        _probs_sorted = -np.sort(-np.array(embeddings))
+        _difference = _probs_sorted[:, 0] / _probs_sorted[:, 1]
+        return _path_list[_difference.argsort()[:int(n)]]
 
 
 class EntropySampling(Strategy):
@@ -108,25 +66,11 @@ class EntropySampling(Strategy):
     Reference: Active learning literature survey. (https://minds.wisconsin.edu/handle/1793/60660)
     """
 
-    def __init__(self, infer_func, proc_func, model_name, batch_size, address='localhost:8900'):
-        super(EntropySampling, self).__init__(infer_func=infer_func, proc_func=proc_func)
-        self.model_name = model_name
-        self.batch_size = batch_size
-        self.address = address
+    def __init__(self, pool_size, path_mapping):
+        super(EntropySampling, self).__init__(pool_size, path_mapping)
 
-    def query(self, n):
+    def query(self, n, embeddings=None):
         self.check_query_num(n)
-        path_list = np.array([x[2] for x in self.data_pool])
-        # update the inference results.
-        while len(self.data_not_inferred) > 0:
-            md5_list, uuid_list, data_list = self.proc_func(self.data_not_inferred)
-            probs = self.infer_func(data_list, self.batch_size,
-                                    model_name=self.model_name, address=self.address)
-            for i in range(len(probs)):
-                self.db_manager.update_inference(uuid_list[i], probs[i])
-            self.data_not_inferred = self.db_manager.get_rows(inferred=False)
-        # query the inference table.
-        rows = self.db_manager.get_rows()
-        infer_probs = [x[3] for x in rows]
-        entropy = (infer_probs * np.log(infer_probs)).sum(1)
-        return path_list[entropy.argsort()[:n]]
+        _path_list = np.array(self.path_mapping)
+        _entropy = (embeddings * np.log(embeddings)).sum(1)
+        return _path_list[_entropy.argsort()[:int(n)]]

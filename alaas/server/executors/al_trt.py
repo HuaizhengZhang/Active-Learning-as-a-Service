@@ -15,7 +15,7 @@ from alaas.server.util import DBManager
 from alaas.server.preprocessor import img_transform
 
 
-class TorchWorker(Executor):
+class TRTWorker(Executor):
     def __init__(
             self,
             model_name: str = 'resnet18',

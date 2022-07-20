@@ -1,28 +1,54 @@
-import requests
+from urllib.parse import urlparse
+from docarray import Document, DocumentArray
 
 
 class Client:
-    """
-    Client: the active learning client class.
-    """
+    def __init__(self, server):
+        """
+        Server scheme is in the format of `scheme://netloc:port`, where
+            - scheme: one of grpc, websocket, http, grpcs, websockets, https
+            - netloc: the server ip address or hostname
+            - port: the public port of the server
+        :param server: the server URI
+        """
+        try:
+            r = urlparse(server)
+            _port = r.port
+            _scheme = r.scheme
+            if not _scheme:
+                raise
+        except:
+            raise ValueError(f'{server} is not a valid scheme')
 
-    def __init__(self, server_url: str):
-        self.server_url = server_url
+        _tls = False
 
-    def push(self, data_list, asynchronous=False):
-        """
-        push the data url list to the cloud active learning server.
-        """
-        return requests.post(self.server_url + "/push", params={'asynchronous': asynchronous}, json=data_list)
+        if _scheme in ('grpcs', 'https', 'wss'):
+            _scheme = _scheme[:-1]
+            _tls = True
 
-    def update_config(self, new_config):
-        """
-        update the server configuration.
-        """
-        return requests.post(self.server_url + "/update_cfg", files={'config': open(new_config, 'rb')})
+        if _scheme == 'ws':
+            _scheme = 'websocket'  # temp fix for the core
 
-    def query(self, budget):
+        if _scheme in ('grpc', 'http', 'websocket'):
+            _kwargs = dict(host=r.hostname, port=_port, protocol=_scheme, tls=_tls)
+
+            from jina import Client
+
+            self._client = Client(**_kwargs)
+            self._async_client = Client(**_kwargs, asyncio=True)
+        else:
+            raise ValueError(f'{server} is not a valid scheme')
+
+    def query_by_uri(self, input_uris, budget):
         """
-        start the active learning process on current data pool with the given budget.
+        Query the active learner by given a list of data uris.
+        @param input_uris: the input data uris (path).
+        @param budget: the querying budget.
+        @return: queried data uris.
         """
-        return requests.get(self.server_url + "/query", params={'budget': budget})
+        _doc_list = []
+        for uri in input_uris:
+            _doc_list.append(Document(uri=uri))
+
+        response = self._client.post('/query', DocumentArray(_doc_list), parameters={'budget': budget}).to_list()
+        return [x["uri"] for x in response]
