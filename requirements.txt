@@ -13,4 +13,4 @@ requests~=2.26.0
 pillow>=9.0.1
 uvicorn==0.17.0
 opencv-python==4.5.5.64
-jina==3.6.15
+jina
