@@ -105,6 +105,12 @@ Currently we supported several active learning strategies shown in the following
 |Diversity|Pool-base|DBAL|Diverse Mini-batch Sampling|2019|[Fedor Zhdanov](https://arxiv.org/abs/1901.05954)|
 |Adversarial|Pool-base|DFAL|DeepFool Active Learning|2018|[M Ducoffe et al.](https://arxiv.org/abs/1802.09841)|
 
+
+## Acknowledgement
+
+- [Jina](https://github.com/jina-ai/jina) - Build cross-modal and multimodal applications on the cloud
+
+
 ## License
 
 The theme is available as open source under the terms of the [Apache 2.0 License](./LICENSE).
