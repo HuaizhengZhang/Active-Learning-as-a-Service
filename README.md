@@ -14,13 +14,19 @@ ALaaS is featured for
 - :collision:    **Elastic** Scale up and down multiple active workers on single or multiple GPU devices.
 - :hatching_chick: **Easy-to-use** With <10 lines of code to start APIs that prototype an active learning workflow.
 
-### Try It Out
+## Try It Out
 
-You may just want to use the pre-trained model as the active selector, to help you select the most informative data
+You may just want to use the pre-trained model as the active data selector to help you select the most informative data
 samples from the unlabeled data pool. We have a CPU-based server for data selection demonstration (least confidence
 strategy with ResNet-18), try it by yourself!
 
-#### HTTP
+<table>
+<tr>
+<td> <b> HTTP </b> </td>
+<td> <b> gRPC </b> </td>
+</tr>
+<tr>
+<td>
 
 ```bash
 curl \
@@ -35,7 +41,8 @@ curl \
     "execEndpoint":"/query"}'
 ```
 
-#### gRPC
+</td>
+<td>
 
 ```python
 from alaas.client import Client
@@ -51,7 +58,11 @@ client = Client('grpc://13.213.8.21:60035')
 print(client.query_by_uri(url_list, budget=3))
 ```
 
-## Quick Start
+</td>
+</tr>
+</table>
+
+Then you will see 3 data samples has been selected from all the 5 data points by active learner. 
 
 ## Installation
 
@@ -64,7 +75,7 @@ pip install alaas
 The package of ALaaS contains both client and server parts. You can build an active data selection service on your own
 servers or just apply the client to perform data selection.
 
-### Start the active learning server by yourself
+## Start the active learning server
 
 You need to start an active learning server before conducting the data selection.
 
@@ -76,8 +87,7 @@ Server(config_path='./you_config.yml').start()
 
 How to customize a configuration for your deployment scenarios can be found [here](./docs/configuration.md).
 
-### Define the active learning client and perform querying
-
+## Querying data from client
 You can easily start the data selection by the following code,
 
 ```python 

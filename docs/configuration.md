@@ -19,8 +19,6 @@ active_learning:
     host: "0.0.0.0"
     port: 60035
     replicas: 1
-
-
 ```
 
 You can define the active learning settings in `active_learning`, which includes the `strategy` for the learning
