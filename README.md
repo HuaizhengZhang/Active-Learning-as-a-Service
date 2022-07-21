@@ -24,15 +24,15 @@ strategy with ResNet-18), try it by yourself!
 
 ```bash
 curl \
--X POST https://0.0.0.0/query \
+-X POST http://13.213.8.21:8081/post \
 -H 'Content-Type: application/json' \
--d '{"data":[{"uri": "https://picsum.photos/200"},
-            {"uri": "https://picsum.photos/201"},
-            {"uri": "https://picsum.photos/202"},
-            {"uri": "https://picsum.photos/203"},
-            {"uri": "https://picsum.photos/204"}], 
-    "execEndpoint":"/"}'
-
+-d '{"data":[{"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane1.png"},
+            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane2.png"},
+            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane3.png"},
+            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane4.png"},
+            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png"}], 
+    "parameters": {"budget": 3},
+    "execEndpoint":"/query"}'
 ```
 
 #### gRPC
@@ -41,13 +41,13 @@ curl \
 from alaas.client import Client
 
 url_list = [
-    'https://picsum.photos/200',
-    'https://picsum.photos/201',
-    'https://picsum.photos/202',
-    'https://picsum.photos/203',
-    'https://picsum.photos/204'
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane1.png',
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane2.png',
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane3.png',
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane4.png',
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png'
 ]
-client = Client('grpc://0.0.0.0:60035')
+client = Client('grpc://13.213.8.21:60035')
 print(client.query_by_uri(url_list, budget=3))
 ```
 
