@@ -52,7 +52,7 @@ print(client.query_by_uri(url_list, budget=3))
 
 Then you will see 3 data samples has been selected from all the 5 data points by active learner. 
 
-## Installation
+## Installation :construction:
 
 You can easily install the ALaaS by [PyPI](https://pypi.org/project/alaas/),
 
@@ -87,7 +87,7 @@ queries = client.query_by_uri(<url_list>, budget=<budget number>)
 
 The output data is a subset uris/data in your request, which means the selection results for further data labeling.
 
-## Support Strategy
+## Support Strategy :art:
 
 Currently we supported several active learning strategies shown in the following table,
 
