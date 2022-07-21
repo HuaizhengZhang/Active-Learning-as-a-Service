@@ -50,7 +50,7 @@ client = Client('grpc://13.213.8.21:60035')
 print(client.query_by_uri(url_list, budget=3))
 ```
 
-Then you will see 3 data samples has been selected from all the 5 data points by active learner. 
+Then you will see 3 data samples (the most informative) has been selected from all the 5 data points by active learner. 
 
 ## Installation :construction:
 
