@@ -14,19 +14,12 @@ ALaaS is featured for
 - :collision:    **Elastic** Scale up and down multiple active workers on single or multiple GPU devices.
 - :hatching_chick: **Easy-to-use** With <10 lines of code to start APIs that prototype an active learning workflow.
 
-## Try It Out
+## Try It Out :coffee:
 
-You may just want to use the pre-trained model as the active data selector to help you select the most informative data
-samples from the unlabeled data pool. We have a CPU-based server for data selection demonstration (least confidence
-strategy with ResNet-18), try it by yourself!
+You may want to use the pre-trained model to help you select the most informative data
+samples from the unlabeled data pool. We have a CPU-based server for data selection demonstration (least confidence sampling with [ResNet-18](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html)), try it by yourself!
 
-<table>
-<tr>
-<td> <b> HTTP </b> </td>
-<td> <b> gRPC </b> </td>
-</tr>
-<tr>
-<td>
+### HTTP
 
 ```bash
 curl \
@@ -41,10 +34,9 @@ curl \
     "execEndpoint":"/query"}'
 ```
 
-</td>
-<td>
+### gRPC
 
-```python
+```bash
 from alaas.client import Client
 
 url_list = [
@@ -57,10 +49,6 @@ url_list = [
 client = Client('grpc://13.213.8.21:60035')
 print(client.query_by_uri(url_list, budget=3))
 ```
-
-</td>
-</tr>
-</table>
 
 Then you will see 3 data samples has been selected from all the 5 data points by active learner. 
 
