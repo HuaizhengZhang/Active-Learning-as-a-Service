@@ -63,6 +63,8 @@ pip install alaas
 The package of ALaaS contains both client and server parts. You can build an active data selection service on your own
 servers or just apply the client to perform data selection.
 
+:warning: For deep learning frameworks like [TensorFlow](https://www.tensorflow.org/) and [Pytorch](https://pytorch.org/), you may need to install manually since the version to meet your deployment can be different.
+
 ## Start the active learning server
 
 You need to start an active learning server before conducting the data selection.
