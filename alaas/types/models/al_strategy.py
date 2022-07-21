@@ -10,7 +10,7 @@ from abc import ABC
 from enum import Enum
 from typing import Union
 
-from alaas.types.models.infer_model import InferModelConfigUnion
+from alaas.types.models.al_model import ALModelBase
 from alaas.types.models.utils import TypeCheckMixin
 
 
@@ -29,37 +29,37 @@ class ALStrategyBase(TypeCheckMixin[ALStrategyType], ABC):
 
 
 class RandomSamplingConfig(ALStrategyBase):
-    infer_model: InferModelConfigUnion
+    model: ALModelBase
 
     __required_type__ = ALStrategyType.RANDOM_SAMPLING
 
 
 class LeastConfidenceConfig(ALStrategyBase):
-    infer_model: InferModelConfigUnion
+    model: ALModelBase
 
     __required_type__ = ALStrategyType.LEAST_CONFIDENCE
 
 
 class MarginConfidenceConfig(ALStrategyBase):
-    infer_model: InferModelConfigUnion
+    model: ALModelBase
 
     __required_type__ = ALStrategyType.MARGIN_CONFIDENCE
 
 
 class RatioConfidenceConfig(ALStrategyBase):
-    infer_model: InferModelConfigUnion
+    model: ALModelBase
 
     __required_type__ = ALStrategyType.RATIO_CONFIDENCE
 
 
 class EntropySamplingConfig(ALStrategyBase):
-    infer_model: InferModelConfigUnion
+    model: ALModelBase
 
     __required_type__ = ALStrategyType.ENTROPY_SAMPLING
 
 
 class KMeansSamplingConfig(ALStrategyBase):
-    infer_model: InferModelConfigUnion
+    model: ALModelBase
 
     __required_type__ = ALStrategyType.KMEANS_SAMPLING
 

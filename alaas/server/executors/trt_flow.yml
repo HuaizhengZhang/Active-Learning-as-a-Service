@@ -3,10 +3,10 @@ version: '1'
 with:
   port: 51000
 executors:
-  - name: al_uncertainty
+  - name: al_tensorrt_worker
     uses:
-      jtype: TRTWorker
+      jtype: TorchWorker
       metas:
         py_modules:
-          - al_trt.py
+          - al_torch.py
     replicas: 1

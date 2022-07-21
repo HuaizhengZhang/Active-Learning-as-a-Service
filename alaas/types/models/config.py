@@ -2,23 +2,26 @@
 # -*- coding: utf-8 -*-
 """
 Author: Li Yuanming
+Author: huangyz0918
 Email: yuanmingleee@gmail.com
+Email: huangyz0918@gmail.com
 Date: May 23, 2022
 """
-from pydantic import BaseModel, BaseSettings, PositiveInt
+from pydantic import BaseModel, BaseSettings
 
 from alaas.types.models.al_strategy import ALStrategyConfigUnion
-from alaas.types.models.al_worker import ALWorkerConfigUnion
 
 
-class ALServerConfig(BaseModel):
-    url: str
-    worker: ALWorkerConfigUnion
+class ALWorkerConfig(BaseModel):
+    protocol: str
+    host: str
+    port: int
+    replicas: int
 
 
 class ALConfig(BaseModel):
     strategy: ALStrategyConfigUnion
-    al_server: ALServerConfig
+    al_worker: ALWorkerConfig
 
 
 class Config(BaseSettings):

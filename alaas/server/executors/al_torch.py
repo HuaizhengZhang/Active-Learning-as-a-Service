@@ -26,12 +26,12 @@ class TorchWorker(Executor):
             self,
             model_name: str = 'resnet18',
             model_repo: str = 'pytorch/vision:v0.10.0',
-            device: str = 'cpu',
+            device: str = None,
             minibatch_size: int = 8,
             num_worker_preprocess: int = 4,
             data_home: str = None,
             transform=img_transform,
-            strategy: ALStrategyType = ALStrategyType.RANDOM_SAMPLING,
+            strategy: str = ALStrategyType.LEAST_CONFIDENCE.value,
             *args,
             **kwargs,
     ):
@@ -93,14 +93,14 @@ class TorchWorker(Executor):
                 ):
                     uris += uri_list
                     minibatch.embeddings = (
-                        F.softmax(self._model(batch_data), dim=1)
+                        F.softmax(self._model(batch_data.to(self._device)), dim=1)
                             .cpu()
                             .numpy()
                             .astype(np.float32)
                     )
 
             _doc_list = []
-            al_method = getattr(importlib.import_module('alaas.server.strategy'), self._strategy.value)
+            al_method = getattr(importlib.import_module('alaas.server.strategy'), self._strategy)
             al_learner = al_method(pool_size=len(uris), path_mapping=uris)
 
             query_results = al_learner.query(parameters['budget'], docs.embeddings)

@@ -26,12 +26,12 @@ class TRTWorker(Executor):
             self,
             model_name: str = 'resnet18',
             model_repo: str = 'pytorch/vision:v0.10.0',
-            device: str = 'cpu',
+            device: str = None,
             minibatch_size: int = 8,
             num_worker_preprocess: int = 4,
             data_home: str = None,
             transform=img_transform,
-            strategy: ALStrategyType = ALStrategyType.RANDOM_SAMPLING,
+            strategy: ALStrategyType = ALStrategyType.LEAST_CONFIDENCE,
             *args,
             **kwargs,
     ):
@@ -93,7 +93,7 @@ class TRTWorker(Executor):
                 ):
                     uris += uri_list
                     minibatch.embeddings = (
-                        F.softmax(self._model(batch_data), dim=1)
+                        F.softmax(self._model(batch_data.to(self._device)), dim=1)
                             .cpu()
                             .numpy()
                             .astype(np.float32)

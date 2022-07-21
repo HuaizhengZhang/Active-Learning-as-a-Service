@@ -7,7 +7,7 @@ import time
 from alaas.client import Client
 
 if __name__ == '__main__':
-    client = Client('grpc://0.0.0.0:65335')
+    client = Client('grpc://0.0.0.0:60035')
     remote_file_list = "test_images.txt"
     # prepare the unlabeled data urls.
     with open(remote_file_list) as file:
