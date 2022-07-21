@@ -10,7 +10,7 @@ active_learning:
       batch_size: 1
       device: "cuda:0"
   al_worker:
-    protocol: "grpc"
+    protocol: "http"
     host: "0.0.0.0"
     port: 60035
     replicas: 1

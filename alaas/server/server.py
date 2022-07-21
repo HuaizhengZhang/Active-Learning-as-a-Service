@@ -21,6 +21,7 @@ class Server:
         self._port = self.cfg_manager.al_worker.port
         self._replica = self.cfg_manager.al_worker.replicas
         self._name = self.cfg_manager.name
+        self._proto = self.cfg_manager.al_worker.protocol
 
         # Active learning executor parameters.
         self._strategy = self.cfg_manager.strategy.type.value
@@ -31,7 +32,7 @@ class Server:
         self._batch_size = self.cfg_manager.strategy.model.batch_size
 
     def start(self):
-        Flow(port=self._port, host=self._host) \
+        Flow(protocol=self._proto, port=self._port, host=self._host) \
             .add(name=self._name,
                  uses=TorchWorker,
                  uses_with={

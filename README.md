@@ -4,12 +4,54 @@
 
 ![](./docs/images/logo.svg)
 
+Active Learning as a Service (ALaaS) is a fast and scalable service framework for users to conduct the data selection
+before human labeling. It can be easily integrated with existing data processing and labeling platforms as a
+microservice.
+
 ALaaS is featured for
 
 - :rocket: **Fast** Use the stage-level parallel to achieve over 10x speedup than normal active learning process.
-- :collision:	**Elastic** Scale up and down multiple active workers on single or multiple GPU devices.
+- :collision:    **Elastic** Scale up and down multiple active workers on single or multiple GPU devices.
 - :hatching_chick: **Easy-to-use** With <10 lines of code to start APIs that prototype an active learning workflow.
 
+### Try It Out
+
+You may just want to use the pre-trained model as the active selector, to help you select the most informative data
+samples from the unlabeled data pool. We have a CPU-based server for data selection demonstration (least confidence
+strategy with ResNet-18), try it by yourself!
+
+#### HTTP
+
+```bash
+curl \
+-X POST https://0.0.0.0/query \
+-H 'Content-Type: application/json' \
+-d '{"data":[{"uri": "https://picsum.photos/200"},
+            {"uri": "https://picsum.photos/201"},
+            {"uri": "https://picsum.photos/202"},
+            {"uri": "https://picsum.photos/203"},
+            {"uri": "https://picsum.photos/204"}], 
+    "execEndpoint":"/"}'
+
+```
+
+#### gRPC
+
+```python
+from alaas.client import Client
+
+url_list = [
+    'https://picsum.photos/200',
+    'https://picsum.photos/201',
+    'https://picsum.photos/202',
+    'https://picsum.photos/203',
+    'https://picsum.photos/204'
+]
+client = Client('grpc://0.0.0.0:60035')
+print(client.query_by_uri(url_list, budget=3))
+```
+
+## Quick Start
 
 ## Installation
 
@@ -19,18 +61,17 @@ You can easily install the ALaaS by [PyPI](https://pypi.org/project/alaas/),
 pip install alaas
 ```
 
-## Quick Start
+The package of ALaaS contains both client and server parts. You can build an active data selection service on your own
+servers or just apply the client to perform data selection.
 
-
-### Start the active learning server
+### Start the active learning server by yourself
 
 You need to start an active learning server before conducting the data selection.
 
 ```python
 from alaas import Server
 
-al_server = Server(config_path='./you_config.yml')
-al_server.start()
+Server(config_path='./you_config.yml').start()
 ```
 
 How to customize a configuration for your deployment scenarios can be found [here](./docs/configuration.md).
@@ -40,27 +81,15 @@ How to customize a configuration for your deployment scenarios can be found [her
 You can easily start the data selection by the following code,
 
 ```python 
-from alaas import Client 
+from alaas.client import Client
 
-al_client = Client(server_url="127.0.0.1:8888")
-al_client.push(data_list, asynchronous=True)
-al_client.query(budget=100)
+client = Client('http://0.0.0.0:60035')
+queries = client.query_by_uri(<url_list>, budget=<budget number>)
 ```
 
-### Example output
+The output data is a subset uris/data in your request, which means the selection results for further data labeling.
 
-the example output will be something like:
-
-```bash
-preparing data...
-Files already downloaded and verified
-start active learning, query number: 100...
-query results: [uri_1, uri_2, uri_3, ...., uri_n]
-```
-
-which are the a list of data samples selected by active learning.
-
-## Support Strategy 
+## Support Strategy
 
 Currently we supported several active learning strategies shown in the following table,
 
