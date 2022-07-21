@@ -10,7 +10,7 @@ python-multipart==0.0.5
 pyyaml~=6.0
 docker~=5.0.3
 requests~=2.26.0
-pillow~=8.4.0
+pillow>=9.0.1
 uvicorn==0.17.0
 opencv-python==4.5.5.64
 jina==3.6.15
