@@ -34,5 +34,5 @@ class ConfigManager:
         return self.config.active_learning.strategy
 
     @property
-    def al_server(self):
-        return self.config.active_learning.al_server
+    def al_worker(self):
+        return self.config.active_learning.al_worker

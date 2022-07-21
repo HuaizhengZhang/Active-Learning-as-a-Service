@@ -1,0 +1,12 @@
+jtype: Flow
+version: '1'
+with:
+  port: 51000
+executors:
+  - name: al_torch_worker
+    uses:
+      jtype: TorchWorker
+      metas:
+        py_modules:
+          - al_torch.py
+    replicas: 1

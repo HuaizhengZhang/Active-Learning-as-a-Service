@@ -1,6 +1,10 @@
 """
-    Data processing and augmentation toolkit.
+Data processing and augmentation toolkit
+For image data.
+@author huangyz0918 (huangyz0918@gmail.com)
+@date 20/07/2022
 """
+
 import cv2
 import numpy as np
 from torchvision import transforms
