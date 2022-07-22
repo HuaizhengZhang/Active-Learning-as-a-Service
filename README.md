@@ -116,3 +116,15 @@ Currently we supported several active learning strategies shown in the following
 ## License
 
 The theme is available as open source under the terms of the [Apache 2.0 License](./LICENSE).
+
+## Citation
+
+Please cite as:
+
+```bash
+@inproceedings{Huang2022ActiveLearningasaServiceAE,
+  title={Active-Learning-as-a-Service: An Efficient MLOps System for Data-Centric AI},
+  author={Yizheng Huang and Huaizheng Zhang and Yuanming Li and Chiew Tong Lau and Yang You},
+  year={2022}
+}
+```
