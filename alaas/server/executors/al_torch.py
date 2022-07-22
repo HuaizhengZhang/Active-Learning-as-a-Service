@@ -7,6 +7,7 @@ The active learning executor of PyTorch models.
 import torch
 import torch.jit
 import torch.nn.functional as F
+from transformers import AutoTokenizer
 
 import os
 import warnings
@@ -16,8 +17,8 @@ from pathlib import Path
 from multiprocessing.pool import ThreadPool
 from jina import Executor, Document, DocumentArray, requests
 
-from alaas.types import ALStrategyType
-from alaas.server.util import DBManager
+from alaas.types import ALStrategyType, ModalityType
+# from alaas.server.util import DBManager
 from alaas.server.preprocessor import img_transform
 
 
@@ -30,6 +31,7 @@ class TorchWorker(Executor):
             minibatch_size: int = 8,
             num_worker_preprocess: int = 4,
             data_home: str = None,
+            tokenizer_model: str = None,
             transform=img_transform,
             strategy: str = ALStrategyType.LEAST_CONFIDENCE.value,
             *args,
@@ -41,13 +43,15 @@ class TorchWorker(Executor):
         self._transform = transform
         self._minibatch_size = minibatch_size
 
+        self._tokenizer_model = tokenizer_model
+
         if data_home is None:
             self._data_home = str(Path.home()) + "/.alaas/"
 
-        self._db_manager = DBManager(self._data_home + 'index.db')
-        self._data_pool = self._db_manager.read_records()
-        self._data_processed = self._db_manager.get_rows()
-        self._data_not_processed = self._db_manager.get_rows(inferred=False)
+        # self._db_manager = DBManager(self._data_home + 'index.db')
+        # self._data_pool = self._db_manager.read_records()
+        # self._data_processed = self._db_manager.get_rows()
+        # self._data_not_processed = self._db_manager.get_rows(inferred=False)
         self._thread_pool = ThreadPool(processes=num_worker_preprocess)
 
         if not device:
@@ -74,7 +78,6 @@ class TorchWorker(Executor):
                 torch.set_num_interop_threads(1)
 
         # set up the active learning (for query only) model.
-        # TODO: add huggingface models.
         self._model = torch.hub.load(model_repo, model=model_name, pretrained=True)
         self._model.eval().to(self._device)
 
@@ -87,7 +90,7 @@ class TorchWorker(Executor):
         ):
             with torch.inference_mode():
                 for minibatch, uri_list, batch_data in docs.map_batch(
-                        self._preproc_images,
+                        self._preproc_data,
                         batch_size=self._minibatch_size,
                         pool=self._thread_pool,
                 ):
@@ -109,20 +112,39 @@ class TorchWorker(Executor):
                 _doc_list.append(Document(uri=result))
             return DocumentArray(_doc_list)
 
-    def _preproc_images(self, docs: DocumentArray):
+    def _preproc_data(self, docs: DocumentArray):
         with self.monitor(
-                name='preprocess_images_seconds',
+                name='preprocess_data_seconds',
                 documentation='images preprocess time in seconds',
         ):
             _tensor_list = []
             uri_list = []
+            if docs[0].blob or docs[0].uri:
+                modality = ModalityType.IMAGE
+            elif docs[0].text:
+                modality = ModalityType.TEXT
+            else:
+                raise TypeError("unsupported data modality, data should be neither image or text.")
+
             for data in docs:
-                if data.blob:
-                    data.convert_blob_to_image_tensor()
-                elif data.tensor is None and data.uri:
-                    uri_list.append(data.uri)
-                    # in case user uses HTTP protocol and send data via curl not using .blob (base64), but in .uri
-                    data.load_uri_to_image_tensor()
+                if modality == ModalityType.IMAGE:
+                    if data.blob:
+                        data.convert_blob_to_image_tensor()
+                    elif data.tensor is None and data.uri:
+                        uri_list.append(data.uri)
+                        # in case user uses HTTP protocol and send data via curl not using .blob (base64), but in .uri
+                        data.load_uri_to_image_tensor()
+                elif modality == ModalityType.TEXT:
+                    if self._tokenizer_model:
+                        tokenizer = AutoTokenizer.from_pretrained(self._tokenizer_model)
+                        data.tensor = tokenizer(data.text, truncation=True)
+                    else:
+                        raise ValueError(
+                            """
+                            For text data, you need to set the tokenizer model in your 
+                            configuration file (e.g., tokenizer: \"distilbert-base-uncased\") 
+                            under the \"active_learning.strategy.model\"
+                            """)
 
                 if self._transform:
                     _tensor_list.append(self._transform(data.tensor))

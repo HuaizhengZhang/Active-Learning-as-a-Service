@@ -25,11 +25,12 @@ class Server:
 
         # Active learning executor parameters.
         self._strategy = self.cfg_manager.strategy.type.value
-        self._executor_name = self.cfg_manager.strategy.model.name
         self._model_hub = self.cfg_manager.strategy.model.hub
-        self._model_name = self.cfg_manager.strategy.model.model
+        self._model_name = self.cfg_manager.strategy.model.name
         self._device = self.cfg_manager.strategy.model.device
         self._batch_size = self.cfg_manager.strategy.model.batch_size
+        # only for text data/model.
+        self._tokenizer = self.cfg_manager.strategy.model.tokenizer
 
     def start(self):
         Flow(protocol=self._proto, port=self._port, host=self._host) \
