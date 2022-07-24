@@ -4,22 +4,28 @@
 
 ![](./docs/images/logo.svg)
 
-Active Learning as a Service (ALaaS) is a fast and scalable service framework for users to conduct the data selection
-before human labeling. It can be easily integrated with existing data processing and labeling platforms as a
-microservice.
+Active Learning as a Service (ALaaS) is a fast and scalable framework for automatically selecting a subset to be labeled
+from a full dataset so to reduce labeling cost. It provides a out-of-the-box and standalone experience for users to quickly
+utilize active learning.
+
 
 ALaaS is featured for
 
-- :rocket: **Fast** Use the stage-level parallel to achieve over 10x speedup than normal active learning process.
-- :collision:    **Elastic** Scale up and down multiple active workers on single or multiple GPU devices.
-- :hatching_chick: **Easy-to-use** With <10 lines of code to start APIs that prototype an active learning workflow.
+- :hatching_chick: **Easy-to-use** With <10 lines of code to start the system to employ active learning.
+- :rocket: **Fast** Use the stage-level parallellism to achieve over 10x speedup than under-optimized active learning process.
+- :collision:    **Elastic** Scale up and down multiple active workers, depending on the number of GPU devices.
+
 
 ## Try It Out :coffee:
 
-You may want to use the pre-trained model to help you select the most informative data
-samples from the unlabeled data pool. We have a CPU-based server for data selection demonstration (least confidence sampling with [ResNet-18](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html)), try it by yourself!
+**0. Free ALaaS demo on AWS**
 
-### HTTP
+Use least confidence sampling with [ResNet-18](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html) 
+to select images to be labeled for your tasks! 
+
+We have deployed ALaaS on AWS for demonstration. Try it by yourself!
+
+**1. Call ALaaS with HTTP**
 
 ```bash
 curl \
@@ -34,7 +40,7 @@ curl \
     "execEndpoint":"/query"}'
 ```
 
-### gRPC
+**2. Call ALaaS with gRPC**
 
 ```bash
 from alaas.client import Client
@@ -50,7 +56,7 @@ client = Client('grpc://13.213.8.21:60035')
 print(client.query_by_uri(url_list, budget=3))
 ```
 
-Then you will see 3 data samples (the most informative) has been selected from all the 5 data points by active learner. 
+Then you will see 3 data samples (the most informative) has been selected from all the 5 data points by ALaaS. 
 
 ## Installation :construction:
 
