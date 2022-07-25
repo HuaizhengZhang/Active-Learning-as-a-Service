@@ -15,6 +15,7 @@ ALaaS is featured for
 - :rocket: **Fast** Use the stage-level parallellism to achieve over 10x speedup than under-optimized active learning process.
 - :collision:    **Elastic** Scale up and down multiple active workers, depending on the number of GPU devices.
 
+*The project is still under the active development. Welcome to join us!*
 
 ## Try It Out :coffee:
 
@@ -71,7 +72,9 @@ servers or just apply the client to perform data selection.
 
 :warning: For deep learning frameworks like [TensorFlow](https://www.tensorflow.org/) and [Pytorch](https://pytorch.org/), you may need to install manually since the version to meet your deployment can be different.
 
-## Start the active learning server
+## Step by Step
+
+**0. Start the active learning server**
 
 You need to start an active learning server before conducting the data selection.
 
@@ -83,7 +86,8 @@ Server(config_path='./you_config.yml').start()
 
 How to customize a configuration for your deployment scenarios can be found [here](./docs/configuration.md).
 
-## Querying data from client
+**1. Querying data from client**
+
 You can easily start the data selection by the following code,
 
 ```python 
@@ -125,12 +129,13 @@ The theme is available as open source under the terms of the [Apache 2.0 License
 
 ## Citation
 
-Please cite as:
+Our tech report is available on [arxiv](https://arxiv.org/abs/2207.09109). Please cite as:
 
 ```bash
-@inproceedings{Huang2022ActiveLearningasaServiceAE,
+@article{huang2022active,
   title={Active-Learning-as-a-Service: An Efficient MLOps System for Data-Centric AI},
-  author={Yizheng Huang and Huaizheng Zhang and Yuanming Li and Chiew Tong Lau and Yang You},
+  author={Huang, Yizheng and Zhang, Huaizheng and Li, Yuanming and Lau, Chiew Tong and You, Yang},
+  journal={arXiv preprint arXiv:2207.09109},
   year={2022}
 }
 ```
