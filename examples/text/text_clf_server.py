@@ -6,7 +6,7 @@ Server example for text classification active learning tasks.
 
 from alaas.server import Server
 
-SERVER_CONFIG = './bert_imdb.yml'
+SERVER_CONFIG = './roberta_large.yml'
 
 if __name__ == '__main__':
     Server(SERVER_CONFIG).start()
