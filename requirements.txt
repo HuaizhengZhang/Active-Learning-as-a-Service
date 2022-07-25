@@ -8,3 +8,5 @@ requests
 opencv-python
 pillow
 jina
+transformers
+sentencepiece

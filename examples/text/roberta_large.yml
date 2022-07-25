@@ -1,0 +1,18 @@
+name: "TXT_CLASSIFICATION_TORCH"
+version: 0.1
+active_learning:
+  strategy:
+    type: "LeastConfidence"
+    model:
+      name: "roberta-large-mnli"
+      hub: "huggingface/pytorch-transformers"
+      batch_size: 1
+      device: "cpu"
+      task: "text-classification"
+      tokenizer: "distilbert-base-uncased"
+  al_worker:
+    protocol: "grpc"
+    host: "0.0.0.0"
+    port: 60036
+    replicas: 1
+

@@ -1,16 +1,15 @@
-name: "IMG_CLASSIFICATION"
+name: "IMG_CLASSIFICATION_TORCH"
 version: 0.1
 active_learning:
   strategy:
     type: "LeastConfidence"
     model:
-      name: "resnet_cifar"
-      hub: "pytorch/vision:release/0.12"
-      model: "resnet18"
+      name: "resnet18"
+      hub: "pytorch/vision:v0.10.0"
       batch_size: 1
-      device: "cuda:0"
+      device: "cpu"
   al_worker:
-    protocol: "http"
+    protocol: "grpc"
     host: "0.0.0.0"
     port: 60035
     replicas: 1

@@ -3,3 +3,4 @@
 
 from .config import Config
 from .al_strategy import ALStrategyType
+from .al_model import ModalityType
