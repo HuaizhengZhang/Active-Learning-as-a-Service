@@ -31,6 +31,7 @@ class Server:
         self._batch_size = self.cfg_manager.strategy.model.batch_size
         # only for text data/model.
         self._tokenizer = self.cfg_manager.strategy.model.tokenizer
+        self._task = self.cfg_manager.strategy.model.task
 
     def start(self):
         Flow(protocol=self._proto, port=self._port, host=self._host) \
@@ -42,6 +43,8 @@ class Server:
                      'device': self._device,
                      'strategy': self._strategy,
                      'minibatch_size': self._batch_size,
+                     'tokenizer_model': self._tokenizer,
+                     'task': self._task
                  },
                  replicas=self._replica) \
             .start()

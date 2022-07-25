@@ -7,7 +7,6 @@ The active learning executor of PyTorch models.
 import torch
 import torch.jit
 import torch.nn.functional as F
-from transformers import AutoTokenizer
 
 import os
 import warnings
@@ -32,7 +31,8 @@ class TorchWorker(Executor):
             num_worker_preprocess: int = 4,
             data_home: str = None,
             tokenizer_model: str = None,
-            transform=img_transform,
+            task: str = None,
+            transform=None,
             strategy: str = ALStrategyType.LEAST_CONFIDENCE.value,
             *args,
             **kwargs,
@@ -43,6 +43,7 @@ class TorchWorker(Executor):
         self._transform = transform
         self._minibatch_size = minibatch_size
 
+        self._task = task
         self._tokenizer_model = tokenizer_model
 
         if data_home is None:
@@ -78,38 +79,69 @@ class TorchWorker(Executor):
                 torch.set_num_interop_threads(1)
 
         # set up the active learning (for query only) model.
-        self._model = torch.hub.load(model_repo, model=model_name, pretrained=True)
-        self._model.eval().to(self._device)
+        if self._tokenizer_model and 'huggingface' in model_repo:
+            self._data_modality = ModalityType.TEXT
+            from transformers import AutoTokenizer, pipeline
+            _tokenizer = AutoTokenizer.from_pretrained(self._tokenizer_model)
+            self._model = pipeline(self._task,
+                                   model=model_name,
+                                   tokenizer=_tokenizer,
+                                   device=self._convert_torch_device(),
+                                   return_all_scores=True)
+        else:
+            self._data_modality = ModalityType.IMAGE
+            self._model = torch.hub.load(model_repo, model=model_name, pretrained=True)
+            self._model.eval().to(self._device)
+
+    def _convert_torch_device(self):
+        if self._device == 'cpu':
+            return -1
+        elif self._device == 'cuda':
+            return 0
+        else:
+            return self._device.split(':')[-1]
 
     @requests
     def query(self, docs: DocumentArray, parameters, **kwargs):
-        uris = []
+        index_pths = []
         with self.monitor(
                 name='query_inputs',
                 documentation='data download and preprocess time in seconds',
         ):
             with torch.inference_mode():
-                for minibatch, uri_list, batch_data in docs.map_batch(
+                for minibatch, index_list, batch_data in docs.map_batch(
                         self._preproc_data,
                         batch_size=self._minibatch_size,
                         pool=self._thread_pool,
                 ):
-                    uris += uri_list
-                    minibatch.embeddings = (
-                        F.softmax(self._model(batch_data.to(self._device)), dim=1)
-                            .cpu()
-                            .numpy()
-                            .astype(np.float32)
-                    )
+                    index_pths += index_list
+                    if self._data_modality == ModalityType.IMAGE:
+                        minibatch.embeddings = (
+                            F.softmax(self._model(batch_data.to(self._device)), dim=1)
+                                .cpu()
+                                .numpy()
+                                .astype(np.float32)
+                        )
+                    elif self._data_modality == ModalityType.TEXT:
+                        results = []
+                        for item in self._model(batch_data):
+                            results.append([x['score'] for x in item])
+                        minibatch.embeddings = (
+                            np.array(results)
+                        )
 
             _doc_list = []
             al_method = getattr(importlib.import_module('alaas.server.strategy'), self._strategy)
-            al_learner = al_method(pool_size=len(uris), path_mapping=uris)
-
+            al_learner = al_method(pool_size=len(index_pths), path_mapping=index_pths)
             query_results = al_learner.query(parameters['budget'], docs.embeddings)
 
             for result in query_results:
-                _doc_list.append(Document(uri=result))
+                if self._data_modality == ModalityType.IMAGE:
+                    # TODO: deal with local files.
+                    _doc_list.append(Document(uri=result))
+                elif self._data_modality == ModalityType.TEXT:
+                    _doc_list.append(Document(text=result))
+
             return DocumentArray(_doc_list)
 
     def _preproc_data(self, docs: DocumentArray):
@@ -118,26 +150,35 @@ class TorchWorker(Executor):
                 documentation='images preprocess time in seconds',
         ):
             _tensor_list = []
-            uri_list = []
+            index_list = []
+
             if docs[0].blob or docs[0].uri:
-                modality = ModalityType.IMAGE
+                self._data_modality = ModalityType.IMAGE
             elif docs[0].text:
-                modality = ModalityType.TEXT
+                self._data_modality = ModalityType.TEXT
             else:
                 raise TypeError("unsupported data modality, data should be neither image or text.")
 
-            for data in docs:
-                if modality == ModalityType.IMAGE:
+            if self._data_modality == ModalityType.IMAGE:
+                self._transform = img_transform
+                for data in docs:
                     if data.blob:
                         data.convert_blob_to_image_tensor()
+                        index_list.append(data.blob)
                     elif data.tensor is None and data.uri:
-                        uri_list.append(data.uri)
+                        index_list.append(data.uri)
                         # in case user uses HTTP protocol and send data via curl not using .blob (base64), but in .uri
                         data.load_uri_to_image_tensor()
-                elif modality == ModalityType.TEXT:
+
+                    _tensor_list.append(self._transform(data.tensor))
+                return_outputs = torch.stack(_tensor_list, dim=0)
+            elif self._data_modality == ModalityType.TEXT:
+                for data in docs:
                     if self._tokenizer_model:
-                        tokenizer = AutoTokenizer.from_pretrained(self._tokenizer_model)
-                        data.tensor = tokenizer(data.text, truncation=True)
+                        index_list.append(data.text)
+                        # TODO: text data pre-processing here.
+                        _tensor_list.append(data.text)
+                        return_outputs = _tensor_list
                     else:
                         raise ValueError(
                             """
@@ -146,8 +187,4 @@ class TorchWorker(Executor):
                             under the \"active_learning.strategy.model\"
                             """)
 
-                if self._transform:
-                    _tensor_list.append(self._transform(data.tensor))
-                else:
-                    _tensor_list.append(data.tensor)
-            return docs, uri_list, torch.stack(_tensor_list, dim=0)
+            return docs, index_list, return_outputs

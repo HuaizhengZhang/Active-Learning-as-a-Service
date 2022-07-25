@@ -14,6 +14,7 @@ class ALModelBase(BaseModel):
     hub: str
     device: str
     tokenizer: Optional[str] = None
+    task: Optional[str] = None
 
     args: List[str] = Field(default_factory=list)
     kwargs: Dict[str, Any] = Field({'pretrained': True})

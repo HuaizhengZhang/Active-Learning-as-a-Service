@@ -71,7 +71,7 @@ class Client:
             _doc_list.append(Document(text=txt))
 
         response = self._client.post('/query', DocumentArray(_doc_list), parameters={'budget': budget}).to_list()
-        return [x["uri"] for x in response]
+        return [x["text"] for x in response]
 
     def query_by_images(self, path_list, budget):
         """
