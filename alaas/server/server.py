@@ -15,6 +15,10 @@ class Server:
     """
 
     def __init__(self, config_path):
+        """
+        Building an ALaaS server.
+        @param config_path: path to the ALaaS server configuration file.
+        """
         # TODO: multi-worker support
         self.cfg_manager = ConfigManager(config_path)
         self._host = self.cfg_manager.al_worker.host

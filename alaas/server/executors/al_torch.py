@@ -22,6 +22,10 @@ from alaas.server.preprocessor import img_transform
 
 
 class TorchWorker(Executor):
+    """
+    TorchWorker: the backend worker class of PyTorch models.
+    """
+
     def __init__(
             self,
             model_name: str = 'resnet18',
@@ -37,6 +41,21 @@ class TorchWorker(Executor):
             *args,
             **kwargs,
     ):
+        """
+        The parameters of build a TorchWorker.
+        @param model_name: the active learning model name (default is resnet18).
+        @param model_repo: the model hub name, for example: pytorch/vision:v0.10.0, models will be downloaded from here.
+        @param device: the model running device (default is 'cpu').
+        @param minibatch_size: the mini batch size for data processing.
+        @param num_worker_preprocess: the number of backend workers (multi-thread).
+        @param data_home: the data home path for storing the unlabeled data.
+        @param tokenizer_model: [for nlp tasks], the model name of tokenizer, for example, 'bert-large-uncased'.
+        @param task: [for nlp tasks], the task name of transformers pipeline, for example, 'text-classification'.
+        @param transform: the data transform for pre-processing.
+        @param strategy: the active learning strategy (for example, 'LeastConfidence').
+        @param args: the args for backend server.
+        @param kwargs: the kwargs for backend server.
+        """
         super().__init__(*args, **kwargs)
 
         self._strategy = strategy
@@ -94,6 +113,10 @@ class TorchWorker(Executor):
             self._model.eval().to(self._device)
 
     def _convert_torch_device(self):
+        """
+        converting the pytorch devices to the format of transformers.
+        @return: the processed device.
+        """
         if self._device == 'cpu':
             return -1
         elif self._device == 'cuda':
@@ -103,6 +126,14 @@ class TorchWorker(Executor):
 
     @requests
     def query(self, docs: DocumentArray, parameters, **kwargs):
+        """
+        Active learning query function. This function is an end-to-end data query function,
+        the data need to be uploaded/downloaded after calling the function.
+        @param docs: the uploaded/targeted data, can be blob/uri for CV tasks or text for NLP tasks.
+        @param parameters: the parameters include the active learning budget, etc.
+        @param kwargs: the kwargs for the backend server.
+        @return: the queried data in uris/blobs/texts.
+        """
         index_pths = []
         with self.monitor(
                 name='query_inputs',
@@ -145,6 +176,11 @@ class TorchWorker(Executor):
             return DocumentArray(_doc_list)
 
     def _preproc_data(self, docs: DocumentArray):
+        """
+        pre-processing function for the active learning input data.
+        @param docs: the input data.
+        @return: original data objects, data index list (for active learning mapping), and the processed data.
+        """
         with self.monitor(
                 name='preprocess_data_seconds',
                 documentation='images preprocess time in seconds',
