@@ -19,18 +19,28 @@ ALaaS is featured for
 
 ## Try It Out :coffee:
 
-**0. Free ALaaS demo on AWS**
+**Free ALaaS demo on AWS**
 
 Use least confidence sampling with [ResNet-18](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html) 
 to select images to be labeled for your tasks! 
 
 We have deployed ALaaS on AWS for demonstration. Try it by yourself!
 
-**1. Call ALaaS with HTTP**
-
+<table>
+<thead>
+<tr>
+<th>
+call ALaaS with HTTP 🌐
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+            
 ```bash
 curl \
--X POST http://13.213.8.21:8081/post \
+-X POST http://13.213.29.8:8081/post \
 -H 'Content-Type: application/json' \
 -d '{"data":[{"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane1.png"},
             {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane2.png"},
@@ -40,10 +50,18 @@ curl \
     "parameters": {"budget": 3},
     "execEndpoint":"/query"}'
 ```
-
-**2. Call ALaaS with gRPC**
-
-```bash
+            
+</td>
+</tr>
+<tr>
+<th>
+call ALaaS with gRPC 🔐
+</th>
+</tr>
+<tr>
+<td>
+            
+```python
 from alaas.client import Client
 
 url_list = [
@@ -53,9 +71,14 @@ url_list = [
     'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane4.png',
     'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png'
 ]
-client = Client('grpc://13.213.8.21:60035')
+client = Client('grpc://13.213.29.8:60035')
 print(client.query_by_uri(url_list, budget=3))
-```
+```    
+            
+</td>
+</tr>
+</tbody>
+</table>
 
 Then you will see 3 data samples (the most informative) has been selected from all the 5 data points by ALaaS. 
 
