@@ -15,6 +15,17 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "HuaizhengZhang",
+      "name": "Huaizheng",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5894780?v=4",
+      "profile": "https://huaizhengzhang.github.io",
+      "contributions": [
+        "content",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
