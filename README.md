@@ -164,6 +164,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="http://huangyz.name"><img src="https://avatars.githubusercontent.com/u/15646062?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Yizheng Huang</b></sub></a><br /><a href="#infra-huangyz0918" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/MLSysOps/ALaaS/commits?author=huangyz0918" title="Tests">⚠️</a> <a href="https://github.com/MLSysOps/ALaaS/commits?author=huangyz0918" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/YuanmingLeee"><img src="https://avatars.githubusercontent.com/u/36268431?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Yuanming Li</b></sub></a><br /><a href="https://github.com/MLSysOps/ALaaS/commits?author=YuanmingLeee" title="Tests">⚠️</a> <a href="https://github.com/MLSysOps/ALaaS/commits?author=YuanmingLeee" title="Code">💻</a></td>
   </tr>
 </table>
 
