@@ -4,7 +4,7 @@ active_learning:
   strategy:
     type: "LeastConfidence"
     model:
-      name: "roberta-large-mnli"
+      name: "distilbert-base-uncased"
       hub: "huggingface/pytorch-transformers"
       batch_size: 1
       device: "cpu"

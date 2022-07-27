@@ -168,10 +168,10 @@ class TorchWorker(Executor):
 
             for result in query_results:
                 if self._data_modality == ModalityType.IMAGE:
-                    # TODO: deal with local files.
-                    _doc_list.append(Document(uri=result))
+                    _doc_list.append(Document(blob=result.blob, uri=result.uri))
+
                 elif self._data_modality == ModalityType.TEXT:
-                    _doc_list.append(Document(text=result))
+                    _doc_list.append(Document(text=result.text, uri=result.uri))
 
             return DocumentArray(_doc_list)
 
@@ -199,19 +199,20 @@ class TorchWorker(Executor):
                 self._transform = img_transform
                 for data in docs:
                     if data.blob:
+                        index_doc = Document(blob=data.blob)
                         data.convert_blob_to_image_tensor()
-                        index_list.append(data.blob)
                     elif data.tensor is None and data.uri:
-                        index_list.append(data.uri)
                         # in case user uses HTTP protocol and send data via curl not using .blob (base64), but in .uri
+                        index_doc = Document(uri=data.uri)
                         data.load_uri_to_image_tensor()
 
+                    index_list.append(index_doc)
                     _tensor_list.append(self._transform(data.tensor))
                 return_outputs = torch.stack(_tensor_list, dim=0)
             elif self._data_modality == ModalityType.TEXT:
                 for data in docs:
                     if self._tokenizer_model:
-                        index_list.append(data.text)
+                        index_list.append(Document(text=data.text))
                         # TODO: text data pre-processing here.
                         _tensor_list.append(data.text)
                         return_outputs = _tensor_list
