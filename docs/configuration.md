@@ -56,5 +56,5 @@ You should fill the configuration file with above types.
 
 To configure the active learning worker on the server, you should turn to `al_worker`, currently we support `grpc`
 , `http` and `ws` (Websocket) three different protocols. And you can set the host address (`al_worker.host`) and data
-I/O port (al_worker.port) as your wish. The `al_worker.replicas` means for this worker, how many instance should be
+I/O port (`al_worker.port`) as your wish. The `al_worker.replicas` means for this worker, how many instance should be
 launched at the same time.
