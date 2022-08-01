@@ -22,9 +22,8 @@ class LeastConfidence(Strategy):
         self.check_query_num(n)
         _path_list = np.array(self.path_mapping)
         if self.n_drop:
-            _uncertainties = np.amax(embeddings.mean(0), axis=1)
-        else:
-            _uncertainties = np.amax(embeddings, axis=1)
+            embeddings = embeddings.mean(0)
+        _uncertainties = np.amax(embeddings, axis=1)
         return _path_list[_uncertainties.argsort()[:int(n)]]
 
 
@@ -42,9 +41,8 @@ class MarginConfidence(Strategy):
         self.check_query_num(n)
         _path_list = np.array(self.path_mapping)
         if self.n_drop:
-            _probs_sorted = -np.sort(-np.array(embeddings.mean(0)))
-        else:
-            _probs_sorted = -np.sort(-np.array(embeddings))
+            embeddings = embeddings.mean(0)
+        _probs_sorted = -np.sort(-np.array(embeddings))
         _difference = _probs_sorted[:, 0] - _probs_sorted[:, 1]
         return _path_list[_difference.argsort()[:int(n)]]
 
@@ -62,9 +60,8 @@ class RatioConfidence(Strategy):
         self.check_query_num(n)
         _path_list = np.array(self.path_mapping)
         if self.n_drop:
-            _probs_sorted = -np.sort(-np.array(embeddings.mean(0)))
-        else:
-            _probs_sorted = -np.sort(-np.array(embeddings))
+            embeddings = embeddings.mean(0)
+        _probs_sorted = -np.sort(-np.array(embeddings))
         _difference = _probs_sorted[:, 0] / _probs_sorted[:, 1]
         return _path_list[_difference.argsort()[:int(n)]]
 
