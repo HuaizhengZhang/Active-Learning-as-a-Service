@@ -16,8 +16,8 @@ from pathlib import Path
 from multiprocessing.pool import ThreadPool
 from jina import Executor, Document, DocumentArray, requests
 
+from alaas.server.util import DBManager
 from alaas.types import ALStrategyType, ModalityType
-# from alaas.server.util import DBManager
 from alaas.server.preprocessor import img_transform
 
 
@@ -61,18 +61,19 @@ class TorchWorker(Executor):
         self._strategy = strategy
         self._transform = transform
         self._minibatch_size = minibatch_size
+        self._thread_pool = ThreadPool(processes=num_worker_preprocess)
 
         self._task = task
         self._tokenizer_model = tokenizer_model
 
         if data_home is None:
             self._data_home = str(Path.home()) + "/.alaas/"
+            Path(self._data_home).mkdir(parents=True, exist_ok=True)
 
-        # self._db_manager = DBManager(self._data_home + 'index.db')
-        # self._data_pool = self._db_manager.read_records()
-        # self._data_processed = self._db_manager.get_rows()
-        # self._data_not_processed = self._db_manager.get_rows(inferred=False)
-        self._thread_pool = ThreadPool(processes=num_worker_preprocess)
+        self._db_manager = DBManager(self._data_home + 'cache.db')
+        self._data_pool = self._db_manager.read_records()
+        self._data_processed = self._db_manager.get_rows()
+        self._data_not_processed = self._db_manager.get_rows(inferred=False)
 
         if not device:
             self._device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -91,9 +92,6 @@ class TorchWorker(Executor):
                     f'sub-optimal performance.'
                 )
 
-                # NOTE: make sure to set the threads right after the torch import,
-                # and `torch.set_num_threads` always take precedence over environment variables `OMP_NUM_THREADS`.
-                # For more details, please see https://pytorch.org/docs/stable/generated/torch.set_num_threads.html
                 torch.set_num_threads(max(num_threads, 1))
                 torch.set_num_interop_threads(1)
 
@@ -124,7 +122,57 @@ class TorchWorker(Executor):
         else:
             return self._device.split(':')[-1]
 
-    @requests
+    def _set_input_modality(self, sample: Document):
+        """
+        Check and set the global data modality for the worker.
+        @param sample: one of the sample from all the unlabeled data samples.
+        @return: None.
+        """
+        if sample.blob or sample.uri:
+            self._data_modality = ModalityType.IMAGE
+        elif sample.text:
+            self._data_modality = ModalityType.TEXT
+        else:
+            raise TypeError("unsupported data modality, data should be neither image or text.")
+
+    @requests(on='/push')
+    def push(self, docs: DocumentArray, parameters, **kwargs):
+        """
+        Active learning push function. This function is designed for large-scale input data/uris,
+        the data will be fetched first and store temporary in the centre AL server.
+        @param docs: the uploaded/targeted data, can be blob/uri for CV tasks or text for NLP tasks.
+        @param parameters: the parameters include the active learning budget, etc.
+        @param kwargs: the kwargs for the backend server.
+        @return: the queried data in uris/blobs/texts.
+        """
+        index_pths = []
+
+        # save the docs into local files.
+        if parameters['save_path']:
+            save_path = parameters['save_path']
+        else:
+            save_path = self._data_home
+
+        for doc in docs:
+            data_path = save_path + doc.id
+            index_pths.append(Document(content=data_path))
+
+            if doc.blob:
+                doc.save_blob_to_file(data_path)
+
+            elif doc.uri:
+                doc.load_uri_to_blob()
+                doc.save_blob_to_file(data_path)
+
+            elif doc.text:
+                doc.convert_text_to_datauri()
+                doc.save_uri_to_file(data_path)
+
+            self._db_manager.insert_record(data_path)
+
+        return DocumentArray(index_pths)
+
+    @requests(on='/query')
     def query(self, docs: DocumentArray, parameters, **kwargs):
         """
         Active learning query function. This function is an end-to-end data query function,
@@ -188,12 +236,7 @@ class TorchWorker(Executor):
             _tensor_list = []
             index_list = []
 
-            if docs[0].blob or docs[0].uri:
-                self._data_modality = ModalityType.IMAGE
-            elif docs[0].text:
-                self._data_modality = ModalityType.TEXT
-            else:
-                raise TypeError("unsupported data modality, data should be neither image or text.")
+            self._set_input_modality(docs[0])
 
             if self._data_modality == ModalityType.IMAGE:
                 self._transform = img_transform
