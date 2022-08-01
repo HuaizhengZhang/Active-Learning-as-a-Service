@@ -6,7 +6,7 @@ Server example for text classification active learning tasks.
 
 from alaas.server import Server
 
-SERVER_CONFIG = './roberta_large.yml'
+SERVER_CONFIG = './distilbert_base.yml'
 
 if __name__ == '__main__':
     Server(SERVER_CONFIG).start()

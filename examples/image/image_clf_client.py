@@ -13,7 +13,8 @@ if __name__ == '__main__':
         'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane2.png',
         'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane3.png',
         'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane4.png',
-        'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png'
+        'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png',
+        'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane6.png'
     ]
     start_time = time.time()
     queries = client.query_by_uri(remote_file_list, budget=3)

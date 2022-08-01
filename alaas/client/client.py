@@ -47,12 +47,13 @@ class Client:
         else:
             raise ValueError(f'{server} is not a valid scheme')
 
-    def query_by_uri(self, input_uris, budget, divide_mode=False):
+    def query_by_uri(self, input_uris, budget, divide_mode=False, n_drop=None):
         """
         Query the active learner by given a list of image data uris.
         @param input_uris: the input data uris (path).
         @param budget: the querying budget.
         @param divide_mode: query the data by the batch mode, can be applied to large data.
+        @param n_drop: the number of dropout, default is None (1).
         @return: queried data uris.
         """
         if divide_mode:
@@ -67,17 +68,19 @@ class Client:
             for uri in input_uris:
                 _doc_list.append(Document(uri=uri))
 
-            response = self._client.post('/query', DocumentArray(_doc_list), parameters={'budget': budget}).to_list()
+            response = self._client.post('/query', DocumentArray(_doc_list),
+                                         parameters={'budget': budget, 'n_drop': n_drop}).to_list()
             return [x["uri"] for x in response]
 
         return None
 
-    def query_by_text(self, texts, budget, divide_mode=False):
+    def query_by_text(self, texts, budget, divide_mode=False, n_drop=None):
         """
         Query the active learner by given a list of text data uris.
         @param texts: the input data texts.
         @param budget: the querying budget.
         @param divide_mode: query the data by the batch mode, can be applied to large data.
+        @param n_drop: the number of dropout, default is None (1).
         @return: queried data uris.
         """
         if divide_mode:
@@ -92,17 +95,19 @@ class Client:
             for txt in texts:
                 _doc_list.append(Document(text=txt, mime_type='text'))
 
-            response = self._client.post('/query', DocumentArray(_doc_list), parameters={'budget': budget}).to_list()
+            response = self._client.post('/query', DocumentArray(_doc_list),
+                                         parameters={'budget': budget, 'n_drop': n_drop}).to_list()
             return [x["text"] for x in response]
 
         return None
 
-    def query_by_images(self, path_list, budget, divide_mode=False):
+    def query_by_images(self, path_list, budget, divide_mode=False, n_drop=None):
         """
         Query the active learner by given a list of text data uris.
         @param path_list: the input data images (local path).
         @param budget: the querying budget.
         @param divide_mode: query the data by the batch mode, can be applied to large data.
+        @param n_drop: the number of dropout, default is None (1).
         @return: queried data uris.
         """
         if divide_mode:
@@ -117,7 +122,8 @@ class Client:
             for pth in path_list:
                 _doc_list.append(Document(blob=open(pth, "rb").read(), mime_type='image'))
 
-            response = self._client.post('/query', DocumentArray(_doc_list), parameters={'budget': budget}).to_list()
+            response = self._client.post('/query', DocumentArray(_doc_list),
+                                         parameters={'budget': budget, 'n_drop': n_drop}).to_list()
             return [x["blob"] for x in response]
 
         return None

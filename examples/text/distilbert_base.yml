@@ -6,7 +6,7 @@ active_learning:
     model:
       name: "distilbert-base-uncased"
       hub: "huggingface/pytorch-transformers"
-      batch_size: 1
+      batch_size: 2
       device: "cpu"
       task: "text-classification"
       tokenizer: "distilbert-base-uncased"

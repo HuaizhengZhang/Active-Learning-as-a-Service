@@ -3,6 +3,7 @@ The active learning executor of PyTorch models.
 @author huangyz0918 (huangyz0918@gmail.com)
 @date 28/05/2022
 """
+import copy
 
 import torch
 import torch.jit
@@ -135,6 +136,35 @@ class TorchWorker(Executor):
         else:
             raise TypeError("unsupported data modality, data should be neither image or text.")
 
+    def _get_model_embeddings(self, docs: DocumentArray):
+        """
+        Get the processed data embedding by given deep learning models.
+        @param docs: the input data in DocumentArray.
+        @return: the return values in DocumentArray with embeddings.
+        """
+        index_pths = []
+        for minibatch, index_list, batch_data in docs.map_batch(
+                self._preproc_data,
+                batch_size=self._minibatch_size,
+                pool=self._thread_pool,
+        ):
+            index_pths += index_list
+            if self._data_modality == ModalityType.IMAGE:
+                minibatch.embeddings = (
+                    F.softmax(self._model(batch_data.to(self._device)), dim=1)
+                        .cpu()
+                        .numpy()
+                        .astype(np.float32)
+                )
+            elif self._data_modality == ModalityType.TEXT:
+                results = []
+                for item in self._model(batch_data):
+                    results.append([x['score'] for x in item])
+                minibatch.embeddings = (
+                    np.array(results)
+                )
+        return index_pths, docs
+
     @requests(on='/push')
     def push(self, docs: DocumentArray, parameters, **kwargs):
         """
@@ -179,40 +209,38 @@ class TorchWorker(Executor):
         the data need to be uploaded/downloaded after calling the function.
         @param docs: the uploaded/targeted data, can be blob/uri for CV tasks or text for NLP tasks.
         @param parameters: the parameters include the active learning budget, etc.
+            @param budget: the active learning query budget, required for each query.
+            @param n_drop: the number of dropout, default is None.
         @param kwargs: the kwargs for the backend server.
         @return: the queried data in uris/blobs/texts.
         """
         index_pths = []
+        input_embeddings = None
         with self.monitor(
                 name='query_inputs',
                 documentation='data download and preprocess time in seconds',
         ):
             with torch.inference_mode():
-                for minibatch, index_list, batch_data in docs.map_batch(
-                        self._preproc_data,
-                        batch_size=self._minibatch_size,
-                        pool=self._thread_pool,
-                ):
-                    index_pths += index_list
-                    if self._data_modality == ModalityType.IMAGE:
-                        minibatch.embeddings = (
-                            F.softmax(self._model(batch_data.to(self._device)), dim=1)
-                                .cpu()
-                                .numpy()
-                                .astype(np.float32)
-                        )
-                    elif self._data_modality == ModalityType.TEXT:
-                        results = []
-                        for item in self._model(batch_data):
-                            results.append([x['score'] for x in item])
-                        minibatch.embeddings = (
-                            np.array(results)
-                        )
+                if parameters['n_drop']:
+                    for _ in range(int(parameters['n_drop'])):
+                        index_pths, round_docs = self._get_model_embeddings(copy.deepcopy(docs))
+                        if input_embeddings is None:
+                            input_embeddings = round_docs.embeddings
+                            input_embeddings = np.stack((input_embeddings, round_docs.embeddings))
+                        else:
+                            input_embeddings = np.concatenate((input_embeddings, [round_docs.embeddings]), axis=0)
+                else:
+                    index_pths, docs = self._get_model_embeddings(docs)
+                    input_embeddings = docs.embeddings
 
             _doc_list = []
             al_method = getattr(importlib.import_module('alaas.server.strategy'), self._strategy)
-            al_learner = al_method(pool_size=len(index_pths), path_mapping=index_pths)
-            query_results = al_learner.query(parameters['budget'], docs.embeddings)
+            if parameters['n_drop']:
+                al_learner = al_method(pool_size=len(index_pths), path_mapping=index_pths,
+                                       n_drop=int(parameters['n_drop']))
+            else:
+                al_learner = al_method(pool_size=len(index_pths), path_mapping=index_pths, n_drop=None)
+            query_results = al_learner.query(parameters['budget'], input_embeddings)
 
             for result in query_results:
                 if self._data_modality == ModalityType.IMAGE:
