@@ -22,6 +22,7 @@ class ALStrategyType(Enum):
     RATIO_CONFIDENCE = 'RatioConfidence'
     ENTROPY_SAMPLING = 'EntropySampling'
     KMEANS_SAMPLING = 'KMeansSampling'
+    BAYESIAN_DISAGREEMENT = 'BayesianDisagreement'
 
 
 class ALStrategyBase(TypeCheckMixin[ALStrategyType], ABC):
@@ -64,11 +65,18 @@ class KMeansSamplingConfig(ALStrategyBase):
     __required_type__ = ALStrategyType.KMEANS_SAMPLING
 
 
+class BayesianDisagreementConfig(ALStrategyBase):
+    model: ALModelBase
+
+    __required_type__ = ALStrategyType.BAYESIAN_DISAGREEMENT
+
+
 ALStrategyConfigUnion = Union[
     RandomSamplingConfig,
     LeastConfidenceConfig,
     MarginConfidenceConfig,
     RatioConfidenceConfig,
     EntropySamplingConfig,
-    KMeansSamplingConfig
+    KMeansSamplingConfig,
+    BayesianDisagreementConfig
 ]

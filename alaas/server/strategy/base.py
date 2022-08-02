@@ -8,13 +8,15 @@ Base active learning class.
 class Strategy:
     """The basic active learning strategy class"""
 
-    def __init__(self, pool_size, path_mapping):
+    def __init__(self, pool_size, path_mapping, n_drop=None):
         """
         @param pool_size: if pool size = 1, the settings is stream-based.
         @param path_mapping: the mapping with input uris.
+        @param n_drop: the number of dropout, default is None.
         """
         self.pool_size = pool_size
         self.path_mapping = path_mapping
+        self.n_drop = n_drop
 
     def check_query_num(self, number):
         """
