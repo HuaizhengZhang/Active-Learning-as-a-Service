@@ -136,7 +136,7 @@ Currently we supported several active learning strategies shown in the following
 |Uncertainty|Pool-base|RC|Ratio Confidence Sampling|2009|[B Settles et al.](https://research.cs.wisc.edu/techreports/2009/TR1648.pdf)|
 |Uncertainty|Pool-base|VRC|Variation Ratios Sampling|1965|[EH Johnson et al.](https://academic.oup.com/sf/article-abstract/44/3/455/2228590?redirectedFrom=fulltext)|
 |Uncertainty|Pool-base|ES|Entropy Sampling|2009|[B Settles et al.](https://research.cs.wisc.edu/techreports/2009/TR1648.pdf)|
-|Uncertainty|Pool-base|MSTD|Mean Standard Deviation|2016|[Michael Kampffmeyer et al.](https://ieeexplore.ieee.org/document/7789580)|
+|Uncertainty|Pool-base|MSTD|Mean Standard Deviation|2016|[M Kampffmeyer et al.](https://ieeexplore.ieee.org/document/7789580)|
 |Uncertainty|Pool-base|BALD|Bayesian Active Learning Disagreement|2017|[Y Gal et al.](https://arxiv.org/abs/1703.02910)|
 |Clustering|Pool-base|KCG|K-Center Greedy Sampling|2017|[Ozan Sener et al.](https://www.semanticscholar.org/paper/A-Geometric-Approach-to-Active-Learning-for-Neural-Sener-Savarese/82fb7661d892a7412726de6ead14269139d0310c)|
 |Clustering|Pool-base|KM|K-Means Sampling|2011|[Z Bodó et al.](http://proceedings.mlr.press/v16/bodo11a/bodo11a.pdf)|
