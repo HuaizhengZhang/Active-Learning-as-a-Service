@@ -106,3 +106,48 @@ class BayesianDisagreement(Strategy):
             return _path_list[_uncertainties.argsort()[:int(n)]]
         else:
             raise ValueError("strategy {BayesianDisagreement} requires to set the parameter {n_drop} > 1")
+
+
+class MeanSTDSampling(Strategy):
+    """
+    Mean Standard Deviation Sampling.
+    Reference: Semantic segmentation of small objects and modeling of uncertainty in urban remote
+                sensing images using deep convolutional neural networks, CVPR, 2016
+                (https://ieeexplore.ieee.org/document/7789580)
+    """
+
+    def __init__(self, pool_size, path_mapping, n_drop):
+        super(MeanSTDSampling, self).__init__(pool_size, path_mapping, n_drop)
+
+    def query(self, n, embeddings=None):
+        self.check_query_num(n)
+        _path_list = np.array(self.path_mapping)
+
+        if self.n_drop:
+            sigma_c = np.std(embeddings, axis=0)
+            _uncertainties = np.mean(sigma_c, axis=-1)
+            _uncertainties_sorted = np.argsort(-np.array(_uncertainties))
+            return _path_list[_uncertainties_sorted[:int(n)]]
+        else:
+            raise ValueError("strategy {BayesianDisagreement} requires to set the parameter {n_drop} > 1")
+
+
+class VarRatioSampling(Strategy):
+    """
+    Variation Ratios Sampling.
+    Reference: Elementary applied statistics: for students in behavioral science. New York: Wiley, 1965
+    """
+
+    def __init__(self, pool_size, path_mapping, n_drop):
+        super(VarRatioSampling, self).__init__(pool_size, path_mapping, n_drop)
+
+    def query(self, n, embeddings=None):
+        self.check_query_num(n)
+        _path_list = np.array(self.path_mapping)
+
+        if self.n_drop:
+            embeddings = embeddings.mean(0)
+
+        _preds = np.max(embeddings, axis=1)
+        _uncertainties = np.argsort(-np.array(1.0 - _preds))
+        return _path_list[_uncertainties[:int(n)]]

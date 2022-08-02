@@ -42,8 +42,10 @@ corresponding types inside our framework are,
 |Least Confidence Sampling|`LeastConfidence`|
 |Margin Confidence Sampling|`MarginConfidence`|
 |Ratio Confidence Sampling|`RatioConfidence`|
+|Variation Ratios Sampling|`VarRatioSampling`|
 |Entropy Sampling|`EntropySampling`|
 |Bayesian Active Learning Disagreement|`BayesianDisagreement`|
+|Mean Standard Deviation|`MeanSTDSampling`|
 |K-Center Greedy Sampling|`KCenterSampling`|
 |K-Means Sampling|`KMeansSampling`|
 |Core-Set Selection Approach|`CoreSet`|

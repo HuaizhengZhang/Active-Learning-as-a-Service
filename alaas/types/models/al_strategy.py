@@ -22,7 +22,10 @@ class ALStrategyType(Enum):
     RATIO_CONFIDENCE = 'RatioConfidence'
     ENTROPY_SAMPLING = 'EntropySampling'
     KMEANS_SAMPLING = 'KMeansSampling'
+    BADGE_SAMPLING = 'BadgeSampling'
     BAYESIAN_DISAGREEMENT = 'BayesianDisagreement'
+    MEAN_STD = 'MeanSTDSampling'
+    VAR_RATIO = 'VarRatioSampling'
 
 
 class ALStrategyBase(TypeCheckMixin[ALStrategyType], ABC):
@@ -71,6 +74,24 @@ class BayesianDisagreementConfig(ALStrategyBase):
     __required_type__ = ALStrategyType.BAYESIAN_DISAGREEMENT
 
 
+class BadgeSamplingConfig(ALStrategyBase):
+    model: ALModelBase
+
+    __required_type__ = ALStrategyType.BADGE_SAMPLING
+
+
+class MeanSTDSamplingConfig(ALStrategyBase):
+    model: ALModelBase
+
+    __required_type__ = ALStrategyType.MEAN_STD
+
+
+class VarRatioSamplingConfig(ALStrategyBase):
+    model: ALModelBase
+
+    __required_type__ = ALStrategyType.VAR_RATIO
+
+
 ALStrategyConfigUnion = Union[
     RandomSamplingConfig,
     LeastConfidenceConfig,
@@ -78,5 +99,8 @@ ALStrategyConfigUnion = Union[
     RatioConfidenceConfig,
     EntropySamplingConfig,
     KMeansSamplingConfig,
-    BayesianDisagreementConfig
+    BayesianDisagreementConfig,
+    BadgeSamplingConfig,
+    MeanSTDSamplingConfig,
+    VarRatioSamplingConfig
 ]
