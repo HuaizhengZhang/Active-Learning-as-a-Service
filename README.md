@@ -21,8 +21,6 @@ ALaaS is featured for
 
 **Free ALaaS demo on AWS**
 
-![](./docs/images/demo.png)
-
 Use least confidence sampling with [ResNet-18](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html) 
 to select images to be labeled for your tasks! 
 
