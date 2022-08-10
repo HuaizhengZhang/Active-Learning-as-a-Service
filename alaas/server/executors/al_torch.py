@@ -22,9 +22,9 @@ from alaas.types import ALStrategyType, ModalityType
 from alaas.server.preprocessor import img_transform
 
 
-class TorchWorker(Executor):
+class TorchALWorker(Executor):
     """
-    TorchWorker: the backend worker class of PyTorch models.
+    TorchALWorker: the backend worker class of PyTorch models.
     """
 
     def __init__(

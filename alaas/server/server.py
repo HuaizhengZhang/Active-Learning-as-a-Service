@@ -6,7 +6,7 @@ The basic server of ALaaS.
 from jina import Flow
 
 from alaas.server.util import ConfigManager
-from alaas.server.executors import TorchWorker
+from alaas.server.executors import TorchALWorker
 
 
 class Server:
@@ -40,7 +40,7 @@ class Server:
     def start(self):
         Flow(protocol=self._proto, port=self._port, host=self._host) \
             .add(name=self._name,
-                 uses=TorchWorker,
+                 uses=TorchALWorker,
                  uses_with={
                      'model_name': self._model_name,
                      'model_repo': self._model_hub,
