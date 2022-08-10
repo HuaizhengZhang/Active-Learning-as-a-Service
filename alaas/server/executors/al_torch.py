@@ -236,10 +236,9 @@ class TorchALWorker(Executor):
             _doc_list = []
             al_method = getattr(importlib.import_module('alaas.server.strategy'), self._strategy)
             if parameters['n_drop']:
-                al_learner = al_method(pool_size=len(index_pths), path_mapping=index_pths,
-                                       n_drop=int(parameters['n_drop']))
+                al_learner = al_method(path_mapping=index_pths, n_drop=int(parameters['n_drop']))
             else:
-                al_learner = al_method(pool_size=len(index_pths), path_mapping=index_pths, n_drop=None)
+                al_learner = al_method(path_mapping=index_pths, n_drop=None)
             query_results = al_learner.query(parameters['budget'], input_embeddings)
 
             for result in query_results:

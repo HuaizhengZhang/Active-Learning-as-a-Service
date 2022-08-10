@@ -68,7 +68,7 @@ class Client:
             for uri in input_uris:
                 _doc_list.append(Document(uri=uri))
 
-            response = self._client.post('/query', DocumentArray(_doc_list),
+            response = self._client.post('/query', DocumentArray(_doc_list), request_size=len(_doc_list),
                                          parameters={'budget': budget, 'n_drop': n_drop}).to_list()
             return [x["uri"] for x in response]
 
@@ -95,7 +95,7 @@ class Client:
             for txt in texts:
                 _doc_list.append(Document(text=txt, mime_type='text'))
 
-            response = self._client.post('/query', DocumentArray(_doc_list),
+            response = self._client.post('/query', DocumentArray(_doc_list), request_size=len(_doc_list),
                                          parameters={'budget': budget, 'n_drop': n_drop}).to_list()
             return [x["text"] for x in response]
 
@@ -122,7 +122,7 @@ class Client:
             for pth in path_list:
                 _doc_list.append(Document(blob=open(pth, "rb").read(), mime_type='image'))
 
-            response = self._client.post('/query', DocumentArray(_doc_list),
+            response = self._client.post('/query', DocumentArray(_doc_list), request_size=len(_doc_list),
                                          parameters={'budget': budget, 'n_drop': n_drop}).to_list()
             return [x["blob"] for x in response]
 

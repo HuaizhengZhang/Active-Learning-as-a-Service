@@ -15,8 +15,8 @@ class KMeansSampling(Strategy):
     KMeans Cluster Sampling Method.
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(KMeansSampling, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(KMeansSampling, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)
@@ -37,8 +37,8 @@ class KMeansSampling(Strategy):
 #     K-Center Greedy Method.
 #     """
 #
-#     def __init__(self, pool_size, path_mapping, n_drop):
-#         super(KCenterGreedy, self).__init__(pool_size, path_mapping, n_drop)
+#     def __init__(self, path_mapping, n_drop):
+#         super(KCenterGreedy, self).__init__(path_mapping, n_drop)
 #
 #     def query(self, n, embeddings=None):
 #         self.check_query_num(n)

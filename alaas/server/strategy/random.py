@@ -13,8 +13,8 @@ class RandomSampling(Strategy):
     Randomly Selected the query samples.
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(RandomSampling, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(RandomSampling, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embedding=None):
         self.check_query_num(n)
