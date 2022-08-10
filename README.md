@@ -21,8 +21,6 @@ ALaaS is featured for
 
 **Free ALaaS demo on AWS**
 
-![](./docs/images/demo.png)
-
 Use least confidence sampling with [ResNet-18](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html) 
 to select images to be labeled for your tasks! 
 
@@ -131,18 +129,18 @@ Currently we supported several active learning strategies shown in the following
 |Type|Setting|Abbr|Strategy|Year|Reference|
 |:--:|:--:|:--:|:--:|:--:|:--:|
 |Random|Pool-base|RS|Random Sampling|-|-|
-|Uncertainty|Pool-base|LC|Least Confidence Sampling|1994|[DD Lew et al.](https://arxiv.org/pdf/cmp-lg/9407020)|
-|Uncertainty|Pool-base|MC|Margin Confidence Sampling|2001|[T Scheffer et al.](https://link.springer.com/chapter/10.1007/3-540-44816-0_31)|
-|Uncertainty|Pool-base|RC|Ratio Confidence Sampling|2009|[B Settles et al.](https://research.cs.wisc.edu/techreports/2009/TR1648.pdf)|
-|Uncertainty|Pool-base|VRC|Variation Ratios Sampling|1965|[EH Johnson et al.](https://academic.oup.com/sf/article-abstract/44/3/455/2228590?redirectedFrom=fulltext)|
-|Uncertainty|Pool-base|ES|Entropy Sampling|2009|[B Settles et al.](https://research.cs.wisc.edu/techreports/2009/TR1648.pdf)|
-|Uncertainty|Pool-base|MSTD|Mean Standard Deviation|2016|[Michael Kampffmeyer et al.](https://ieeexplore.ieee.org/document/7789580)|
-|Uncertainty|Pool-base|BALD|Bayesian Active Learning Disagreement|2017|[Y Gal et al.](https://arxiv.org/abs/1703.02910)|
-|Clustering|Pool-base|KCG|K-Center Greedy Sampling|2017|[Ozan Sener et al.](https://www.semanticscholar.org/paper/A-Geometric-Approach-to-Active-Learning-for-Neural-Sener-Savarese/82fb7661d892a7412726de6ead14269139d0310c)|
-|Clustering|Pool-base|KM|K-Means Sampling|2011|[Z Bodó et al.](http://proceedings.mlr.press/v16/bodo11a/bodo11a.pdf)|
-|Clustering|Pool-base|CS|Core-Set Selection Approach|2018|[Ozan Sener et al.](https://arxiv.org/abs/1708.00489?context=cs)|
-|Diversity|Pool-base|DBAL|Diverse Mini-batch Sampling|2019|[Fedor Zhdanov](https://arxiv.org/abs/1901.05954)|
-|Adversarial|Pool-base|DFAL|DeepFool Active Learning|2018|[M Ducoffe et al.](https://arxiv.org/abs/1802.09841)|
+|Uncertainty|Pool|LC|Least Confidence Sampling|1994|[DD Lew et al.](https://arxiv.org/pdf/cmp-lg/9407020)|
+|Uncertainty|Pool|MC|Margin Confidence Sampling|2001|[T Scheffer et al.](https://link.springer.com/chapter/10.1007/3-540-44816-0_31)|
+|Uncertainty|Pool|RC|Ratio Confidence Sampling|2009|[B Settles et al.](https://research.cs.wisc.edu/techreports/2009/TR1648.pdf)|
+|Uncertainty|Pool|VRC|Variation Ratios Sampling|1965|[EH Johnson et al.](https://academic.oup.com/sf/article-abstract/44/3/455/2228590?redirectedFrom=fulltext)|
+|Uncertainty|Pool|ES|Entropy Sampling|2009|[B Settles et al.](https://research.cs.wisc.edu/techreports/2009/TR1648.pdf)|
+|Uncertainty|Pool|MSTD|Mean Standard Deviation|2016|[M Kampffmeyer et al.](https://ieeexplore.ieee.org/document/7789580)|
+|Uncertainty|Pool|BALD|Bayesian Active Learning Disagreement|2017|[Y Gal et al.](https://arxiv.org/abs/1703.02910)|
+|Clustering|Pool|KCG|K-Center Greedy Sampling|2017|[Ozan Sener et al.](https://www.semanticscholar.org/paper/A-Geometric-Approach-to-Active-Learning-for-Neural-Sener-Savarese/82fb7661d892a7412726de6ead14269139d0310c)|
+|Clustering|Pool|KM|K-Means Sampling|2011|[Z Bodó et al.](http://proceedings.mlr.press/v16/bodo11a/bodo11a.pdf)|
+|Clustering|Pool|CS|Core-Set Selection Approach|2018|[Ozan Sener et al.](https://arxiv.org/abs/1708.00489?context=cs)|
+|Diversity|Pool|DBAL|Diverse Mini-batch Sampling|2019|[Fedor Zhdanov](https://arxiv.org/abs/1901.05954)|
+|Adversarial|Pool|DFAL|DeepFool Active Learning|2018|[M Ducoffe et al.](https://arxiv.org/abs/1802.09841)|
 
 
 ## Citation
