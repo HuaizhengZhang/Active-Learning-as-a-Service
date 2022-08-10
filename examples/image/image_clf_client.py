@@ -6,7 +6,25 @@ Client example for image classification active learning tasks.
 import time
 from alaas.client import Client
 
-if __name__ == '__main__':
+
+def all_cifar10(budget=1000):
+    client = Client('grpc://0.0.0.0:60035')
+
+    with open('uri_cifar10.txt') as file:
+        lines = file.readlines()
+        remote_file_list = [line.rstrip() for line in lines]
+
+        start_time = time.time()
+        queries = client.query_by_uri(remote_file_list, budget=budget)
+        end_al_time = time.time()
+
+        with open('log.txt', 'w') as log:
+            print(queries, file=log)
+
+        print(f"Latency: {end_al_time - start_time}")
+
+
+def part_cifar10(budget=3):
     client = Client('grpc://0.0.0.0:60035')
     remote_file_list = [
         'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane1.png',
@@ -17,7 +35,11 @@ if __name__ == '__main__':
         'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane6.png'
     ]
     start_time = time.time()
-    queries = client.query_by_uri(remote_file_list, budget=3)
+    queries = client.query_by_uri(remote_file_list, budget=budget)
     end_al_time = time.time()
     print(queries)
     print(f"Latency: {end_al_time - start_time}")
+
+
+if __name__ == '__main__':
+    all_cifar10()
