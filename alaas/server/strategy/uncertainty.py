@@ -15,8 +15,8 @@ class LeastConfidence(Strategy):
     (https://arxiv.org/pdf/cmp-lg/9407020)
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(LeastConfidence, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(LeastConfidence, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)
@@ -34,8 +34,8 @@ class MarginConfidence(Strategy):
     (https://link.springer.com/chapter/10.1007/3-540-44816-0_31)
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(MarginConfidence, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(MarginConfidence, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)
@@ -53,8 +53,8 @@ class RatioConfidence(Strategy):
     Reference: Active learning literature survey. (https://minds.wisconsin.edu/handle/1793/60660)
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(RatioConfidence, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(RatioConfidence, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)
@@ -72,8 +72,8 @@ class EntropySampling(Strategy):
     Reference: Active learning literature survey. (https://minds.wisconsin.edu/handle/1793/60660)
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(EntropySampling, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(EntropySampling, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)
@@ -90,8 +90,8 @@ class BayesianDisagreement(Strategy):
     Reference: https://arxiv.org/abs/1703.02910
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(BayesianDisagreement, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(BayesianDisagreement, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)
@@ -116,8 +116,8 @@ class MeanSTDSampling(Strategy):
                 (https://ieeexplore.ieee.org/document/7789580)
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(MeanSTDSampling, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(MeanSTDSampling, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)
@@ -138,8 +138,8 @@ class VarRatioSampling(Strategy):
     Reference: Elementary applied statistics: for students in behavioral science. New York: Wiley, 1965
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(VarRatioSampling, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(VarRatioSampling, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)

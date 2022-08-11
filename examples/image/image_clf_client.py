@@ -7,10 +7,10 @@ import time
 from alaas.client import Client
 
 
-def all_cifar10(budget=1000):
+def list_cifar10(file_name, budget=1000):
     client = Client('grpc://0.0.0.0:60035')
 
-    with open('uri_cifar10.txt') as file:
+    with open(file_name) as file:
         lines = file.readlines()
         remote_file_list = [line.rstrip() for line in lines]
 
@@ -19,7 +19,8 @@ def all_cifar10(budget=1000):
         end_al_time = time.time()
 
         with open('log.txt', 'w') as log:
-            print(queries, file=log)
+            for q in queries:
+                print(q, file=log)
 
         print(f"Latency: {end_al_time - start_time}")
 
@@ -42,4 +43,4 @@ def part_cifar10(budget=3):
 
 
 if __name__ == '__main__':
-    all_cifar10()
+    list_cifar10('1k_cifar10.txt', 100)

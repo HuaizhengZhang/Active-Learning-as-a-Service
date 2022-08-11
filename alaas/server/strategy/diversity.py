@@ -26,8 +26,8 @@ class BadgeSampling(Strategy):
     }
     """
 
-    def __init__(self, pool_size, path_mapping, n_drop):
-        super(BadgeSampling, self).__init__(pool_size, path_mapping, n_drop)
+    def __init__(self, path_mapping, n_drop):
+        super(BadgeSampling, self).__init__(path_mapping, n_drop)
 
     def query(self, n, embeddings=None):
         self.check_query_num(n)
