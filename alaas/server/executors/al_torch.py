@@ -221,7 +221,7 @@ class TorchALWorker(Executor):
                 documentation='data download and preprocess time in seconds',
         ):
             with torch.inference_mode():
-                if 'n_drop' in parameters.keys():
+                if 'n_drop' in parameters.keys() and parameters['n_drop'] is not None:
                     for _ in range(int(parameters['n_drop'])):
                         index_pths, round_docs = self._get_model_embeddings(copy.deepcopy(docs))
                         if input_embeddings is None:
@@ -235,7 +235,7 @@ class TorchALWorker(Executor):
 
             _doc_list = []
             al_method = getattr(importlib.import_module('alaas.server.strategy'), self._strategy)
-            if 'n_drop' in parameters.keys():
+            if 'n_drop' in parameters.keys() and parameters['n_drop'] is not None:
                 al_learner = al_method(path_mapping=index_pths, n_drop=int(parameters['n_drop']))
             else:
                 al_learner = al_method(path_mapping=index_pths, n_drop=None)
