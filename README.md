@@ -85,7 +85,7 @@ servers or just apply the client to perform data selection.
 :warning: For deep learning frameworks like [TensorFlow](https://www.tensorflow.org/) and [Pytorch](https://pytorch.org/), you may need to install manually since the version to meet your deployment can be different (as well as [transformers](https://pypi.org/project/transformers/) if you are running models from it).
 
 
-## Quick Start
+## Quick Start :truck:
 
 After the installation of ALaaS, you can easily start a local server, here is the simplest example that can be executed with only 2 lines of code. 
 
@@ -131,7 +131,7 @@ print(client.query_by_uri(url_list, budget=3))
 The output data is a subset uris/data in your input dataset, which indicates selected results for further data labeling.
 
 
-## Customization Your Server
+## Customization Your Server :wrench:
 
 We support two different methods to start your server, 1. by input parameters 2. by YAML configuration
 
