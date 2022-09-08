@@ -27,17 +27,13 @@ to select images to be labeled for your tasks!
 We have deployed ALaaS on AWS for demonstration. Try it by yourself!
 
 <table>
-<thead>
 <tr>
-<th>
-call ALaaS with HTTP 🌐
-</th>
+<td> call ALaaS with HTTP 🌐 </td>
+<td> call ALaaS with gRPC 🔐 </td>
 </tr>
-</thead>
-<tbody>
 <tr>
 <td>
-            
+
 ```bash
 curl \
 -X POST http://13.213.29.8:8081/post \
@@ -50,18 +46,12 @@ curl \
     "parameters": {"budget": 3},
     "execEndpoint":"/query"}'
 ```
-            
+
 </td>
-</tr>
-<tr>
-<th>
-call ALaaS with gRPC 🔐
-</th>
-</tr>
-<tr>
 <td>
-            
+
 ```python
+# pip install alaas
 from alaas.client import Client
 
 url_list = [
@@ -73,12 +63,11 @@ url_list = [
 ]
 client = Client('grpc://13.213.29.8:60035')
 print(client.query_by_uri(url_list, budget=3))
-```    
-            
+```   
 </td>
 </tr>
-</tbody>
 </table>
+
 
 Then you will see 3 data samples (the most informative) has been selected from all the 5 data points by ALaaS. 
 
@@ -93,34 +82,96 @@ pip install alaas
 The package of ALaaS contains both client and server parts. You can build an active data selection service on your own
 servers or just apply the client to perform data selection.
 
-:warning: For deep learning frameworks like [TensorFlow](https://www.tensorflow.org/) and [Pytorch](https://pytorch.org/), you may need to install manually since the version to meet your deployment can be different.
+:warning: For deep learning frameworks like [TensorFlow](https://www.tensorflow.org/) and [Pytorch](https://pytorch.org/), you may need to install manually since the version to meet your deployment can be different (as well as [transformers](https://pypi.org/project/transformers/) if you are running models from it).
 
-## Step by Step
 
-**0. Start the active learning server**
+## Quick Start
 
-You need to start an active learning server before conducting the data selection.
+After the installation of ALaaS, you can easily start a local server, here is the simplest example that can be executed with only 2 lines of code. 
 
 ```python
 from alaas import Server
 
-Server(config_path='./you_config.yml').start()
+Server.start()
 ```
 
-How to customize a configuration for your deployment scenarios can be found [here](./docs/configuration.md).
+The example code (by default) will start an image data selection (PyTorch ResNet-18 for image classification task) HTTP server in port `8081` for you. After this, you can try to get the selection results on your own image dataset, a client-side example is like
 
-**1. Querying data from client**
 
-You can easily start the data selection by the following code,
+```bash
+curl \
+-X POST http://0.0.0.0:8081/post \
+-H 'Content-Type: application/json' \
+-d '{"data":[{"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane1.png"},
+            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane2.png"},
+            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane3.png"},
+            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane4.png"},
+            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png"}], 
+    "parameters": {"budget": 3},
+    "execEndpoint":"/query"}'
+```
 
-```python 
+You can also use `alaas.Client` to build the query request (for both `http` and `grpc` protos) like this,
+
+
+```python
 from alaas.client import Client
 
-client = Client('http://0.0.0.0:60035')
-queries = client.query_by_uri(<url_list>, budget=<budget number>)
+url_list = [
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane1.png',
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane2.png',
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane3.png',
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane4.png',
+    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png'
+]
+client = Client('http://0.0.0.0:8081')
+print(client.query_by_uri(url_list, budget=3))
 ```
 
-The output data is a subset uris/data in your request, which means the selection results for further data labeling.
+The output data is a subset uris/data in your input dataset, which indicates selected results for further data labeling.
+
+
+## Customization Your Server
+
+We support two different methods to start your server, 1. by input parameters 2. by YAML configuration
+
+
+### Input Parameters
+
+You can modify your server by setting different input parameters, 
+
+```python
+from alaas import Server
+
+Server.start(proto='http',                      # the server proto, can be 'grpc', 'http' and 'https'.
+    port=8081,                                  # the access port of your server.
+    host='0.0.0.0',                             # the access IP address of your server.
+    job_name='default_app',                     # the server name.
+    model_hub='pytorch/vision:v0.10.0',         # the active learning model hub, the server will automatically download it for data selection.
+    model_name='resnet18',                      # the active learning model name (should be available in your model hub).
+    device='cpu',                               # the deploy location/device (can be something like 'cpu', 'cuda' or 'cuda:0'). 
+    strategy='LeastConfidence',                 # the selection strategy (read the document to see what ALaaS supports).
+    batch_size=1,                               # the batch size of data processing.
+    replica=1,                                  # the number of workers to select/query data.
+    tokenizer=None,                             # the tokenizer name (should be available in your model hub), only for NLP tasks.
+    transformers_task=None                      # the NLP task name (for HuggingFace [Pipelines](https://huggingface.co/docs/transformers/main_classes/pipelines)), only for NLP tasks.
+)
+```
+
+### YAML Configuration
+
+You can also start the server by setting an input YAML configuration like this,
+
+```python
+from alaas import Server
+
+# start the server by an input configuration file.
+Server.start_by_config('path_to_your_configuration.yml')
+```
+
+Details about building a configuration for your deployment scenarios can be found [here](./docs/configuration.md).
+
+
 
 ## Support Strategy :art:
 
@@ -180,7 +231,8 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 ## Acknowledgement
 
-- [Jina](https://github.com/jina-ai/jina) - Build cross-modal and multimodal applications on the cloud
+- [Jina](https://github.com/jina-ai/jina) - Build cross-modal and multimodal applications on the cloud.
+- [Transformers](https://github.com/huggingface/transformers) - State-of-the-art Machine Learning for Pytorch, TensorFlow, and JAX.
 
 
 ## License
