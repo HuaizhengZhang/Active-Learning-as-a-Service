@@ -14,8 +14,8 @@ class Server:
     Server: Server Class for Active Learning Services.
     """
     @staticmethod
-    def start(proto='grpc',
-                port=60035, 
+    def start(proto='http',
+                port=8081, 
                 host='0.0.0.0', 
                 job_name='default_app', 
                 model_hub='pytorch/vision:v0.10.0', 
