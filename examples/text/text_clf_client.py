@@ -7,7 +7,7 @@ import time
 from alaas.client import Client
 
 if __name__ == '__main__':
-    client = Client('grpc://0.0.0.0:60036')
+    client = Client('grpc://0.0.0.0:60035')
     text_list = [
         'The movie itself was to me a huge disappointment.',
         'What a nasty cynical film.',

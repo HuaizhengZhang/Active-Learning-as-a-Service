@@ -43,4 +43,4 @@ def part_cifar10(budget=3):
 
 
 if __name__ == '__main__':
-    list_cifar10('1k_cifar10.txt', 100)
+    part_cifar10()

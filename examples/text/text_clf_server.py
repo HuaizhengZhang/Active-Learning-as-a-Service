@@ -9,4 +9,11 @@ from alaas.server import Server
 SERVER_CONFIG = './distilbert_base.yml'
 
 if __name__ == '__main__':
-    Server(SERVER_CONFIG).start()
+    # start the server by an input configuration file.
+    # Server.start_by_config(SERVER_CONFIG)
+
+    Server.start(model_hub="huggingface/pytorch-transformers", 
+                    model_name="distilbert-base-uncased",
+                    tokenizer="distilbert-base-uncased",
+                    transformers_task="text-classification"
+                )
