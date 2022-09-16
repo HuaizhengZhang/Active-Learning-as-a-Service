@@ -90,7 +90,7 @@ servers or just apply the client to perform data selection.
 After the installation of ALaaS, you can easily start a local server, here is the simplest example that can be executed with only 2 lines of code. 
 
 ```python
-from alaas import Server
+from alaas.server import Server
 
 Server.start()
 ```
@@ -141,7 +141,7 @@ We support two different methods to start your server, 1. by input parameters 2.
 You can modify your server by setting different input parameters, 
 
 ```python
-from alaas import Server
+from alaas.server import Server
 
 Server.start(proto='http',                      # the server proto, can be 'grpc', 'http' and 'https'.
     port=8081,                                  # the access port of your server.
