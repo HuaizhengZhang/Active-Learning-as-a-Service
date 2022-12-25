@@ -17,7 +17,14 @@ ALaaS is featured for
 
 *The project is still under the active development. Welcome to join us!*
 
-## Try It Out :coffee:
+- [Demo on AWS](https://github.com/MLSysOps/Active-Learning-as-a-Service#demo-on-aws-coffee)
+- [Installation](https://github.com/MLSysOps/Active-Learning-as-a-Service#installation-construction)
+- [Quick Start](https://github.com/MLSysOps/Active-Learning-as-a-Service#quick-start-truck)
+- [ALaaS Server Customization (for Advance users)](https://github.com/MLSysOps/Active-Learning-as-a-Service#alaas-server-customization-wrench)
+- [Strategy Zoo](https://github.com/MLSysOps/Active-Learning-as-a-Service#strategy-zoo-art)
+- [Citation](https://github.com/MLSysOps/Active-Learning-as-a-Service#citation)
+
+## Demo on AWS :coffee:
 
 **Free ALaaS demo on AWS (Support HTTP & gRPC)**
 
@@ -28,8 +35,8 @@ We have deployed ALaaS on AWS for demonstration. Try it by yourself!
 
 <table>
 <tr>
-<td> call ALaaS with HTTP 🌐 </td>
-<td> call ALaaS with gRPC 🔐 </td>
+<td> Call ALaaS with HTTP 🌐 </td>
+<td> Call ALaaS with gRPC 🔐 </td>
 </tr>
 <tr>
 <td>
@@ -131,7 +138,7 @@ print(client.query_by_uri(url_list, budget=3))
 The output data is a subset uris/data in your input dataset, which indicates selected results for further data labeling.
 
 
-## Customization Your Server :wrench:
+## ALaaS Server Customization :wrench:
 
 We support two different methods to start your server, 1. by input parameters 2. by YAML configuration
 
@@ -173,7 +180,7 @@ Details about building a configuration for your deployment scenarios can be foun
 
 
 
-## Support Strategy :art:
+## Strategy Zoo :art:
 
 Currently we supported several active learning strategies shown in the following table,
 
