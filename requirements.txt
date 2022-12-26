@@ -1,4 +1,5 @@
 numpy
+boto3
 scikit_learn
 setuptools
 tqdm
