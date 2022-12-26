@@ -1,6 +1,6 @@
 # ALaaS: Active Learning as a Service.
 
-![PyPI](https://img.shields.io/pypi/v/alaas?color=green) [![Downloads](https://pepy.tech/badge/alaas)](https://pepy.tech/project/alaas) [![Testing](https://github.com/MLSysOps/alaas/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/MLSysOps/alaas/actions/workflows/main.yml) ![GitHub](https://img.shields.io/github/license/MLSysOps/alaas)
+![PyPI](https://img.shields.io/pypi/v/alaas?color=green) [![Downloads](https://pepy.tech/badge/alaas)](https://pepy.tech/project/alaas) [![Testing](https://github.com/MLSysOps/alaas/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/MLSysOps/alaas/actions/workflows/main.yml) ![GitHub](https://img.shields.io/github/license/MLSysOps/alaas) ![Docker Pulls](https://img.shields.io/docker/pulls/huangyz0918/alaas)
 
 ![](./docs/images/logo.svg)
 
@@ -91,6 +91,18 @@ servers or just apply the client to perform data selection.
 
 :warning: For deep learning frameworks like [TensorFlow](https://www.tensorflow.org/) and [Pytorch](https://pytorch.org/), you may need to install manually since the version to meet your deployment can be different (as well as [transformers](https://pypi.org/project/transformers/) if you are running models from it).
 
+You can also use [Docker](https://www.docker.com/) to run ALaaS: 
+
+```bash
+docker pull huangyz0918/alaas
+```
+
+and start a service by the following command:
+
+```bash
+docker run -it --rm -p 8081:8081 \
+        --mount type=bind,source=<config path>,target=/server/config.yml,readonly huangyz0918/alaas:v1
+```
 
 ## Quick Start :truck:
 
