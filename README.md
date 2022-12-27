@@ -173,7 +173,7 @@ Server.start(proto='http',                      # the server proto, can be 'grpc
     batch_size=1,                               # the batch size of data processing.
     replica=1,                                  # the number of workers to select/query data.
     tokenizer=None,                             # the tokenizer name (should be available in your model hub), only for NLP tasks.
-    transformers_task=None                      # the NLP task name (for HuggingFace [Pipelines](https://huggingface.co/docs/transformers/main_classes/pipelines)), only for NLP tasks.
+    transformers_task=None                      # the NLP task name (for Hugging Face [Pipelines](https://huggingface.co/docs/transformers/main_classes/pipelines)), only for NLP tasks.
 )
 ```
 
