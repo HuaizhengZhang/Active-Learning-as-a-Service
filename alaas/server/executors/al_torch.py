@@ -65,6 +65,8 @@ class TorchALWorker(Executor):
         self._thread_pool = ThreadPool(processes=num_worker_preprocess)
 
         self._task = task
+        self._model_repo = model_repo
+        self._model_name = model_name
         self._tokenizer_model = tokenizer_model
 
         if data_home is None:
@@ -95,20 +97,32 @@ class TorchALWorker(Executor):
 
                 torch.set_num_threads(max(num_threads, 1))
                 torch.set_num_interop_threads(1)
+        
+        # skip loading models while using random sampling strategy.
+        if self._strategy != ALStrategyType.RANDOM_SAMPLING.value:
+            self._init_model()
+        else:
+            print("\n skip initializing deep learning models for random sampling strategy. \n")
 
+    def _init_model(self):
         # set up the active learning (for query only) model.
-        if self._tokenizer_model and 'huggingface' in model_repo:
+        if self._tokenizer_model and 'huggingface' in self._model_repo:
             self._data_modality = ModalityType.TEXT
             from transformers import AutoTokenizer, pipeline
             _tokenizer = AutoTokenizer.from_pretrained(self._tokenizer_model)
+            # build task-specify parameters (TODO: adapt to more tasks).
+            hf_extra_parameters = {}
+            if self._task == 'text-classification':
+                hf_extra_parameters.update({'return_all_scores': True})
+            # build the pipeline.
             self._model = pipeline(self._task,
-                                   model=model_name,
-                                   tokenizer=_tokenizer,
-                                   device=self._convert_torch_device(),
-                                   return_all_scores=True)
+                                model=self._model_name,
+                                tokenizer=_tokenizer,
+                                device=self._convert_torch_device(),
+                                **hf_extra_parameters)
         else:
             self._data_modality = ModalityType.IMAGE
-            self._model = torch.hub.load(model_repo, model=model_name, pretrained=True)
+            self._model = torch.hub.load(self._model_repo, model=self._model_name, pretrained=True)
             self._model.eval().to(self._device)
 
     def _convert_torch_device(self):
@@ -149,20 +163,21 @@ class TorchALWorker(Executor):
                 pool=self._thread_pool,
         ):
             index_pths += index_list
-            if self._data_modality == ModalityType.IMAGE:
-                minibatch.embeddings = (
-                    F.softmax(self._model(batch_data.to(self._device)), dim=1)
-                        .cpu()
-                        .numpy()
-                        .astype(np.float32)
-                )
-            elif self._data_modality == ModalityType.TEXT:
-                results = []
-                for item in self._model(batch_data):
-                    results.append([x['score'] for x in item])
-                minibatch.embeddings = (
-                    np.array(results)
-                )
+            if self._strategy != ALStrategyType.RANDOM_SAMPLING.value:
+                if self._data_modality == ModalityType.IMAGE:
+                    minibatch.embeddings = (
+                        F.softmax(self._model(batch_data.to(self._device)), dim=1)
+                            .cpu()
+                            .numpy()
+                            .astype(np.float32)
+                    )
+                elif self._data_modality == ModalityType.TEXT:
+                    results = []
+                    for item in self._model(batch_data):
+                        results.append([x['score'] for x in item])
+                    minibatch.embeddings = (
+                        np.array(results)
+                    )
         return index_pths, docs
 
     @requests(on='/push')

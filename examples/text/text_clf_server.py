@@ -15,5 +15,6 @@ if __name__ == '__main__':
     Server.start(model_hub="huggingface/pytorch-transformers", 
                     model_name="distilbert-base-uncased",
                     tokenizer="distilbert-base-uncased",
-                    transformers_task="text-classification"
+                    transformers_task="text-classification",
+                    strategy="RandomSampling"
                 )
