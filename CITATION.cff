@@ -1,0 +1,8 @@
+cff-version: 0.2.1
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Huang"
+  given-names: "Yizheng"
+title: "Active-Learning-as-a-Service"
+date-released: 2022-12-30
+url: "https://github.com/MLSysOps/Active-Learning-as-a-Service"
