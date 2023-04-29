@@ -1,0 +1,28 @@
+cff-version: 0.2.1
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Huang"
+  given-names: "Yizheng"
+- family-names: "Zhang"
+  given-names: "Huaizheng"
+- family-names: "Li"
+  given-names: "Yuanming"
+title: "Active-Learning-as-a-Service"
+date-released: 2022-12-30
+url: "https://github.com/MLSysOps/Active-Learning-as-a-Service"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Huang"
+    given-names: "Yizheng"
+  - family-names: "Zhang"
+    given-names: "Huaizheng"
+  - family-names: "Li"
+    given-names: "Yuanming"
+  - family-names: "Lau"
+    given-names: "Chiew Tong"
+  - family-names: "You"
+    given-names: "Yang"
+  journal: "arXiv preprint arXiv:2207.09109"
+  title: "Active-Learning-as-a-Service: An Automatic and Efficient MLOps System for Data-Centric AI"
+  year: 2022
