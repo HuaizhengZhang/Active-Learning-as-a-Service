@@ -1,6 +1,6 @@
 # ALaaS: Active Learning as a Service.
 
-![PyPI](https://img.shields.io/pypi/v/alaas?color=green) [![Downloads](https://pepy.tech/badge/alaas)](https://pepy.tech/project/alaas) [![Testing](https://github.com/MLSysOps/alaas/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/MLSysOps/alaas/actions/workflows/main.yml) ![GitHub](https://img.shields.io/github/license/MLSysOps/alaas) ![Docker Pulls](https://img.shields.io/docker/pulls/huangyz0918/alaas)
+![PyPI](https://img.shields.io/pypi/v/alaas?color=green) ![Downloads](https://static.pepy.tech/badge/alaas) [![Testing](https://github.com/MLSysOps/alaas/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/MLSysOps/alaas/actions/workflows/main.yml) ![GitHub](https://img.shields.io/github/license/MLSysOps/alaas) ![Docker Pulls](https://img.shields.io/docker/pulls/huangyz0918/alaas)
 
 ![](./docs/images/logo.svg)
 
@@ -215,7 +215,7 @@ Currently we supported several active learning strategies shown in the following
 
 ## Citation
 
-Our tech report of ALaaS is available on [arxiv](https://arxiv.org/abs/2207.09109) and [NeurIPS 2022](https://neurips-hill.github.io/). Please cite as:
+Our tech report of ALaaS is available on [arxiv](https://arxiv.org/abs/2207.09109) and [NeurIPS 2022](https://neurips.cc/virtual/2022/workshop/49957#wse-detail-64402). Please cite as:
 
 ```bash
 @article{huang2022active,
