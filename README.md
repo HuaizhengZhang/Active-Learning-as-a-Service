@@ -215,7 +215,7 @@ Currently we supported several active learning strategies shown in the following
 
 ## Citation
 
-Our tech report of ALaaS is available on [arxiv](https://arxiv.org/abs/2207.09109) and [NeurIPS 2022](https://neurips.cc/virtual/2022/workshop/49957#wse-detail-64402). Please cite as:
+Our tech report of ALaaS is available on [arxiv](https://arxiv.org/abs/2207.09109) and [NeurIPS 2022](https://neurips.cc/media/PosterPDFs/NeurIPS%202022/64402.png?t=1668072815.3376932). Please cite as:
 
 ```bash
 @article{huang2022active,
