@@ -25,7 +25,7 @@ class Client:
             _scheme = r.scheme
             if not _scheme:
                 raise
-        except:
+        except Exception:
             raise ValueError(f'{server} is not a valid scheme')
 
         _tls = False

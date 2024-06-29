@@ -97,7 +97,7 @@ class TorchALWorker(Executor):
 
                 torch.set_num_threads(max(num_threads, 1))
                 torch.set_num_interop_threads(1)
-        
+
         # skip loading models while using random sampling strategy.
         if self._strategy != ALStrategyType.RANDOM_SAMPLING.value:
             self._init_model()
@@ -116,10 +116,10 @@ class TorchALWorker(Executor):
                 hf_extra_parameters.update({'return_all_scores': True})
             # build the pipeline.
             self._model = pipeline(self._task,
-                                model=self._model_name,
-                                tokenizer=_tokenizer,
-                                device=self._convert_torch_device(),
-                                **hf_extra_parameters)
+                                   model=self._model_name,
+                                   tokenizer=_tokenizer,
+                                   device=self._convert_torch_device(),
+                                   **hf_extra_parameters)
         else:
             self._data_modality = ModalityType.IMAGE
             self._model = torch.hub.load(self._model_repo, model=self._model_name, pretrained=True)
@@ -167,9 +167,9 @@ class TorchALWorker(Executor):
                 if self._data_modality == ModalityType.IMAGE:
                     minibatch.embeddings = (
                         F.softmax(self._model(batch_data.to(self._device)), dim=1)
-                            .cpu()
-                            .numpy()
-                            .astype(np.float32)
+                        .cpu()
+                        .numpy()
+                        .astype(np.float32)
                     )
                 elif self._data_modality == ModalityType.TEXT:
                     results = []
