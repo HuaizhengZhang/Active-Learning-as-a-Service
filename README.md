@@ -5,7 +5,7 @@
 ![](./docs/images/logo.svg)
 
 Active Learning as a Service (ALaaS) is a fast and scalable framework for automatically selecting a subset to be labeled
-from a full dataset so to reduce labeling cost. It provides a out-of-the-box and standalone experience for users to quickly
+from a full dataset so to reduce labeling cost. It provides an out-of-the-box and standalone experience for users to quickly
 utilize active learning.
 
 
@@ -13,70 +13,16 @@ ALaaS is featured for
 
 - :hatching_chick: **Easy-to-use** With <10 lines of code to start the system to employ active learning.
 - :rocket: **Fast** Use the stage-level parallellism to achieve over 10x speedup than under-optimized active learning process.
-- :collision:    **Elastic** Scale up and down multiple active workers, depending on the number of GPU devices.
+- :collision: **Elastic** Scale up and down multiple active workers, depending on the number of GPU devices.
 
 *The project is still under the active development. Welcome to join us!*
 
-- [Demo on AWS](https://github.com/MLSysOps/Active-Learning-as-a-Service#demo-on-aws-coffee)
 - [Installation](https://github.com/MLSysOps/Active-Learning-as-a-Service#installation-construction)
 - [Quick Start](https://github.com/MLSysOps/Active-Learning-as-a-Service#quick-start-truck)
 - [ALaaS Server Customization (for Advance users)](https://github.com/MLSysOps/Active-Learning-as-a-Service#alaas-server-customization-wrench)
 - [Strategy Zoo](https://github.com/MLSysOps/Active-Learning-as-a-Service#strategy-zoo-art)
 - [Citation](https://github.com/MLSysOps/Active-Learning-as-a-Service#citation)
 
-## Demo on AWS :coffee:
-
-**Free ALaaS demo on AWS (Support HTTP & gRPC)**
-
-Use least confidence sampling with [ResNet-18](https://pytorch.org/vision/main/models/generated/torchvision.models.resnet18.html) 
-to select images to be labeled for your tasks! 
-
-We have deployed ALaaS on AWS for demonstration. Try it by yourself!
-
-<table>
-<tr>
-<td> Call ALaaS with HTTP 🌐 </td>
-<td> Call ALaaS with gRPC 🔐 </td>
-</tr>
-<tr>
-<td>
-
-```bash
-curl \
--X POST http://13.213.29.8:8081/post \
--H 'Content-Type: application/json' \
--d '{"data":[{"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane1.png"},
-            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane2.png"},
-            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane3.png"},
-            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane4.png"},
-            {"uri": "https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png"}], 
-    "parameters": {"budget": 3},
-    "execEndpoint":"/query"}'
-```
-
-</td>
-<td>
-
-```python
-# pip install alaas
-from alaas.client import Client
-
-url_list = [
-    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane1.png',
-    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane2.png',
-    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane3.png',
-    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane4.png',
-    'https://www.cs.toronto.edu/~kriz/cifar-10-sample/airplane5.png'
-]
-client = Client('grpc://13.213.29.8:60035')
-print(client.query_by_uri(url_list, budget=3))
-```   
-</td>
-</tr>
-</table>
-
-
-Then you will see 3 data samples (the most informative) has been selected from all the 5 data points by ALaaS. 
 
 ## Installation :construction:
 
