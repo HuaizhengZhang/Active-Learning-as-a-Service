@@ -1,6 +1,6 @@
 # ALaaS: Active Learning as a Service.
 
-![PyPI](https://img.shields.io/pypi/v/alaas?color=green) ![Downloads](https://static.pepy.tech/badge/alaas) [![Testing](https://github.com/MLSysOps/alaas/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/MLSysOps/alaas/actions/workflows/main.yml) ![GitHub](https://img.shields.io/github/license/MLSysOps/alaas) ![Docker Pulls](https://img.shields.io/docker/pulls/huangyz0918/alaas)
+![PyPI](https://img.shields.io/pypi/v/alaas?color=green) ![Downloads](https://static.pepy.tech/badge/alaas) [![Testing](https://github.com/MLSysOps/alaas/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/MLSysOps/alaas/actions/workflows/test.yml) ![GitHub](https://img.shields.io/github/license/MLSysOps/alaas) ![Docker Pulls](https://img.shields.io/docker/pulls/huangyz0918/alaas)
 
 ![](./docs/images/logo.svg)
 
