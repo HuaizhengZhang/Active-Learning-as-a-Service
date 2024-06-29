@@ -10,7 +10,6 @@ from .base import Strategy
 
 class BadgeSampling(Strategy):
     """
-    TODO: to build.
     Reference: Deep Batch Active Learning by Diverse, Uncertain Gradient Lower Bounds (https://arxiv.org/abs/1906.03671).
     @inproceedings{ash2019deep,
       author    = {Jordan T. Ash and

@@ -10,7 +10,6 @@ class Strategy:
 
     def __init__(self, path_mapping, n_drop=None):
         """
-        @param pool_size: if pool size = 1, the settings is stream-based.
         @param path_mapping: the mapping with input uris.
         @param n_drop: the number of dropout, default is None.
         """
